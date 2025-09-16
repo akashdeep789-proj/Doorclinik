@@ -1,0 +1,56 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <h2 class="mb-4">My Appointments</h2>
+
+  <% if (!bookings || bookings.length === 0) { %>
+    <div class="alert alert-info">
+      You have no appointments yet. <a href="/listings">Book one now!</a>
+    </div>
+  <% } else { %>
+    <div class="row">
+      <% bookings.forEach(booking => { %>
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">
+                Dr. <%= booking.listing?.title || "[Deleted Clinic]" %>
+              </h5>
+              <p class="card-text">
+                <strong>Specialist:</strong> <%= booking.listing?.owner?.username || "N/A" %>
+              </p>
+              <p class="card-text">
+                <strong>Appointment Date:</strong> <%= booking.appointmentDate ? booking.appointmentDate.toDateString() : "N/A" %>
+              </p>
+              <p class="card-text">
+                <strong>Time Slot:</strong> <%= booking.appointmentTime || "N/A" %>
+              </p>
+              <p class="card-text">
+                <strong>Status:</strong> 
+                <span class="badge
+                  <%= booking.status === 'pending' ? 'bg-warning' : '' %>
+                  <%= booking.status === 'accepted' ? 'bg-success' : '' %>
+                  <%= (booking.status === 'rejected' || booking.status === 'cancelled') ? 'bg-danger' : '' %>
+                ">
+                  <%= booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1) || "N/A" %>
+                </span>
+              </p>
+              <p class="card-text">
+                <strong>Payment:</strong> 
+                <% if (booking.paymentStatus === 'pending') { %>
+                  <form action="/bookings/<%= booking._id %>/pay" method="POST">
+                    <button class="btn btn-success btn-sm">
+                      Pay Now &#8377; <%= booking.amount || 0 %>
+                    </button>
+                  </form>
+                <% } else { %>
+                  <span class="badge bg-success">Paid</span>
+                <% } %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } %>
+</div>

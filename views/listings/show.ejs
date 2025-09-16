@@ -1,0 +1,128 @@
+<% layout("/layouts/boilerplate") %>
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const listing = <%- JSON.stringify(listing) %>;
+</script>  
+
+<div class="row mt-3">
+  <div class="col-8 offset-3">  
+    <h3>Dr. <%= listing.title %></h3>
+  </div>
+
+  <div class="card col-6 offset-3 show-card listing-card">
+    <img 
+      src="<%= listing.image.url %>" 
+      class="card-img-top show-img" 
+      alt="doctor_image"
+    />
+
+    <div class="card-body">
+      <p class="card-text">Specialist: <i><%= listing.owner ? listing.owner.username : "Not Assigned" %></i></p>
+      <p class="card-text"><%= listing.description %></p>
+      <p class="card-text">Consultation Fee: &#8377; <%= listing.price.toLocaleString("en-IN") %></p>
+      <p class="card-text">Clinic Location: <%= listing.location %></p>
+      <p class="card-text">Country: <%= listing.country %></p>
+    </div>
+  </div>  
+
+  <br />
+
+  <% if (currUser && listing.owner && listing.owner._id.equals(currUser._id)) { %>
+    <div class="btns">      
+      <a 
+        href="/listings/<%= listing._id %>/edit" 
+        class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
+      
+      <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+        <button class="btn btn-dark offset-5">Delete</button>
+      </form>
+    </div>
+  <% } %>
+
+  <% if(currUser) { %>
+  <hr/>
+  <h4>Book Appointment</h4>
+  <form action="/listings/<%= listing._id %>/bookings" method="POST" class="mb-3">
+    <div class="mb-3">
+      <label for="appointmentDate" class="form-label">Appointment Date</label>
+      <input type="date" name="booking[appointmentDate]" id="appointmentDate" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="appointmentTime" class="form-label">Preferred Time</label>
+      <select name="booking[appointmentTime]" id="appointmentTime" class="form-control" required>
+        <option value="" disabled selected>Select a time slot</option>
+        <option value="Morning (9AM - 12PM)">Morning (9AM - 12PM)</option>
+        <option value="Afternoon (12PM - 3PM)">Afternoon (12PM - 3PM)</option>
+        <option value="Evening (3PM - 6PM)">Evening (3PM - 6PM)</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-success">Book Appointment</button>
+  </form>
+<% } %>
+
+
+  <div class="col-8 offset-3 mb-3">
+    <% if(currUser) { %>
+      <hr />
+      <h4>Leave a Review</h4>
+      <form action="/listings/<%= listing.id %>/reviews" method="POST">
+        <div class="mb-3 mt-3">
+          <label for="rating" class="form-label">Rating</label>
+          <fieldset class="starability-slot">
+            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+            <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+          </fieldset>
+        </div>
+
+        <div class="mb-3 mt-3">
+          <label for="comment" class="form-label">Comments</label>
+          <textarea name="review[comment]" id="comment" cols="30" rows="5" class="form-control" required></textarea>
+          <div class="invalid-feedback">Please add some comments for review</div>
+        </div>
+
+        <button class="btn btn-outline-dark">Submit</button>
+      </form>
+      <hr />      
+    <% } %>  
+    
+    <% if(listing.reviews.length > 0) { %>
+      <div class="row">
+        <p><b>Patient Reviews</b></p>
+        <% for (let review of listing.reviews) { %>
+          <div class="card col-5 ms-3 mb-3">
+            <div class="card-body">
+              <% if (review.author) { %>
+                <h5 class="card-title">@<%= review.author.username %></h5>
+              <% } else { %>
+                <h5 class="card-title text-muted">[deleted user]</h5>
+              <% } %>
+              
+              <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
+              <p class="card-text"><%= review.comment %></p>
+
+              <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                <button class="btn btn-sm btn-dark">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% } %>
+      </div>    
+    <% } %> 
+  </div>
+
+  <div class="col-6 offset-3 mb-3">
+    <h3>Clinic Location</h3>
+    <div id="map"></div>
+  </div>      
+</div>
+
+<script src="/js/map.js"></script>

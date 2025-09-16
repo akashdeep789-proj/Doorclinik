@@ -1,0 +1,106 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-4">
+  <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+    
+    <h3 class="mb-4">Add your clinik here!</h3>
+    
+    <form 
+      method="POST" 
+      action="/listings" 
+      enctype="multipart/form-data" 
+      class="needs-validation" 
+      novalidate
+    >
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Clinik Name</label>
+        <input 
+          type="text" 
+          id="title"
+          name="listing[title]" 
+          placeholder="Enter title" 
+          class="form-control" 
+          required 
+        />
+        <div class="valid-feedback">Looks good!</div>
+      </div>      
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea 
+          id="description" 
+          name="listing[description]" 
+          class="form-control" 
+          rows="4"
+          placeholder="Write a short description"
+          required
+        ></textarea>
+        <div class="invalid-feedback">Please enter a short description.</div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="mb-3">
+        <label for="image" class="form-label">Upload Clinik Image</label>
+        <input 
+          type="file" 
+          id="image"
+          name="listing[image]" 
+          class="form-control" 
+          required
+        />
+        <div class="invalid-feedback">Please upload an image.</div>
+      </div>      
+
+      <!-- Price & Country -->
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="price" class="form-label">Fees</label>
+          <input 
+            type="number"
+            id="price"
+            name="listing[price]" 
+            placeholder="1200" 
+            class="form-control" 
+            required 
+          />
+          <div class="invalid-feedback">Please enter a valid price.</div>
+        </div>    
+
+        <div class="col-md-8 mb-3">
+          <label for="country" class="form-label">Country</label>
+          <input 
+            type="text"
+            id="country"
+            name="listing[country]" 
+            placeholder="Enter country" 
+            class="form-control" 
+            required 
+          />
+          <div class="invalid-feedback">Please enter the country name.</div>
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input 
+          type="text"
+          id="location"
+          name="listing[location]" 
+          placeholder="e.g. Goa, India" 
+          class="form-control" 
+          required 
+        />
+        <div class="invalid-feedback">Please enter a valid location.</div>
+      </div>    
+
+      <!-- Submit -->
+      <div class="text-end mt-4">
+        <button type="submit" class="btn btn-dark px-4">Add</button>
+      </div>
+    </form>
+
+  </div>
+</div>
