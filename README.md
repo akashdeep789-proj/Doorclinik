@@ -66,15 +66,9 @@ Tech Stack
 🔹 Frontend
 
 EJS Templates
-
 Bootstrap 5
-
-Vanilla JS for client-side interactions
-
 Socket.IO client for real-time notifications
-
 CSS Grid & Flexbox for layouts
-
 Mapbox for interactive clinic maps
 
 🔹 Backend
