@@ -27,6 +27,11 @@
     display: none;
   }
 
+  .filter i {
+    color: darkgreen; /* 🔹 icon color changed to dark green */
+    font-size: 2rem;
+  }
+
   .tax-toggle {
     border: 1px solid black;
     border-radius: 1rem;
@@ -39,38 +44,39 @@
 </style>    
 
 <div id="filters">
-  <div class="filter">
-    <div><i class="fa-solid fa-user-doctor"></i></div>
-    <p>General Physicians</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-heart-pulse"></i></div>
-    <p>Cardiologists</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-brain"></i></div>
-    <p>Neurologists</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-tooth"></i></div>
-    <p>Dentists</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-eye"></i></div>
-    <p>Eye Specialists</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-baby"></i></div>
-    <p>Pediatricians</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-syringe"></i></div>
-    <p>Vaccinations</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-x-ray"></i></div>
-    <p>Diagnostics</p>
-  </div>
+  <a href="/listings/specialization/General Physician" class="filter">
+  <div><i class="fa-solid fa-user-doctor"></i></div>
+  <p>General Physicians</p>
+</a>
+<a href="/listings/specialization/Cardiologist" class="filter">
+  <div><i class="fa-solid fa-heart-pulse"></i></div>
+  <p>Cardiologists</p>
+</a>
+<a href="/listings/specialization/Neurologist" class="filter">
+  <div><i class="fa-solid fa-brain"></i></div>
+  <p>Neurologists</p>
+</a>
+<a href="/listings/specialization/Dentist" class="filter">
+  <div><i class="fa-solid fa-tooth"></i></div>
+  <p>Dentists</p>
+</a>
+<a href="/listings/specialization/Eye Specialist" class="filter">
+  <div><i class="fa-solid fa-eye"></i></div>
+  <p>Eye Specialists</p>
+</a>
+<a href="/listings/specialization/Pediatrician" class="filter">
+  <div><i class="fa-solid fa-baby"></i></div>
+  <p>Pediatricians</p>
+</a>
+<a href="/listings/specialization/Vaccination" class="filter">
+  <div><i class="fa-solid fa-syringe"></i></div>
+  <p>Vaccinations</p>
+</a>
+<a href="/listings/specialization/Diagnostics" class="filter">
+  <div><i class="fa-solid fa-x-ray"></i></div>
+  <p>Diagnostics</p>
+</a>
+
 
   <div class="tax-toggle">
     <div class="form-check-reverse form-switch">
@@ -82,7 +88,11 @@
 
 <% if (allListings.length === 0) { %>
   <div class="text-center mt-4">
-    <h4>No doctors found for "<%= query %>"</h4>
+    <% if (query) { %>
+      <h4>No doctors found for "<%= query %>"</h4>
+    <% } else { %>
+      <h4>No doctors found in this specialization</h4>
+    <% } %>
   </div>
 <% } %>
 
@@ -101,6 +111,7 @@
           <div class="card-body">
             <p class="card-text">
               <b>Dr. <%= listing.title %></b><br>
+              <small><i><%= listing.specialization %></i></small><br>
               Consultation Fee: ₹<%= listing.price.toLocaleString("en-IN") %>
               <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
             </p>          
@@ -125,5 +136,3 @@
     }
   });
 </script>
-
-

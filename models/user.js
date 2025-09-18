@@ -15,8 +15,8 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
-        default: 'user'
+        enum: ["patient", "doctor", "admin"],
+        default: "patient"
     }
 });
 

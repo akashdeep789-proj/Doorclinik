@@ -3,7 +3,7 @@
 <div class="row mt-4">
   <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
     
-    <h3 class="mb-4">Add your clinik here!</h3>
+    <h3 class="mb-4">Add your Clinic / Doctor Profile</h3>
     
     <form 
       method="POST" 
@@ -12,14 +12,14 @@
       class="needs-validation" 
       novalidate
     >
-      <!-- Title -->
+      <!-- Clinic/Doctor Name -->
       <div class="mb-3">
-        <label for="title" class="form-label">Clinik Name</label>
+        <label for="title" class="form-label">Clinic/Doctor Name</label>
         <input 
           type="text" 
           id="title"
           name="listing[title]" 
-          placeholder="Enter title" 
+          placeholder="Enter name" 
           class="form-control" 
           required 
         />
@@ -34,15 +34,37 @@
           name="listing[description]" 
           class="form-control" 
           rows="4"
-          placeholder="Write a short description"
+          placeholder="Write a short description (e.g. MBBS, MD, 10 years of experience)"
           required
         ></textarea>
         <div class="invalid-feedback">Please enter a short description.</div>
       </div>
 
+      <!-- Specialization -->
+      <div class="mb-3">
+        <label for="specialization" class="form-label">Specialization</label>
+        <select 
+          id="specialization" 
+          name="listing[specialization]" 
+          class="form-select" 
+          required
+        >
+          <option value="" disabled selected>Select specialization</option>
+          <option value="General Physician">General Physician</option>
+          <option value="Cardiologist">Cardiologist</option>
+          <option value="Neurologist">Neurologist</option>
+          <option value="Dentist">Dentist</option>
+          <option value="Eye Specialist">Eye Specialist</option>
+          <option value="Pediatrician">Pediatrician</option>
+          <option value="Vaccination">Vaccination</option>
+          <option value="Diagnostics">Diagnostics</option>
+        </select>
+        <div class="invalid-feedback">Please select a specialization.</div>
+      </div>
+
       <!-- Image Upload -->
       <div class="mb-3">
-        <label for="image" class="form-label">Upload Clinik Image</label>
+        <label for="image" class="form-label">Upload Clinic/Doctor Image</label>
         <input 
           type="file" 
           id="image"
@@ -53,10 +75,10 @@
         <div class="invalid-feedback">Please upload an image.</div>
       </div>      
 
-      <!-- Price & Country -->
+      <!-- Fees & Country -->
       <div class="row">
         <div class="col-md-4 mb-3">
-          <label for="price" class="form-label">Fees</label>
+          <label for="price" class="form-label">Consultation Fees (₹)</label>
           <input 
             type="number"
             id="price"
@@ -65,7 +87,7 @@
             class="form-control" 
             required 
           />
-          <div class="invalid-feedback">Please enter a valid price.</div>
+          <div class="invalid-feedback">Please enter a valid fee.</div>
         </div>    
 
         <div class="col-md-8 mb-3">

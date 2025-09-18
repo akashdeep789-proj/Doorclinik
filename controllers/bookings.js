@@ -96,8 +96,9 @@ module.exports.createBooking = async (req, res) => {
     });
   }
 
+  // ✅ Redirect patient to their bookings page instead of listing page
   req.flash("success", "Appointment booked successfully!");
-  res.redirect(`/listings/${id}`);
+  res.redirect("/bookings/mine");
 };
 
 // Get all bookings of the logged-in user
@@ -111,5 +112,5 @@ module.exports.myBookings = async (req, res) => {
     })
     .sort({ appointmentDate: -1 });
 
-  res.render("bookings/mine", { bookings: bookings || [] });
+  res.render("bookings/mine", { myBookings: bookings || [] });
 };

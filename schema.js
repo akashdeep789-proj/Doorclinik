@@ -8,6 +8,21 @@ module.exports.listingSchema = Joi.object({
         country: Joi.string().required(),
         price: Joi.number().required().min(0),
         image: Joi.string().allow("", null),
+
+        
+        specialization: Joi.string()
+            .valid(
+                "General Physician",
+                "Cardiologist",
+                "Neurologist",
+                "Dentist",
+                "Eye Specialist",
+                "Pediatrician",
+                "Vaccination",
+                "Diagnostics",
+                "Other"
+            )
+            .required(),
     }).required(),
 });
 
