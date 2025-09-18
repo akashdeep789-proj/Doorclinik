@@ -55,8 +55,7 @@ const listingSchema = new Schema({
       "Diagnostics",
       "Other"
     ],
-    required: true,
-    default: "Other"
+    required: true
   }
 });
 
