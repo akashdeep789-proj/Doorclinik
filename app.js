@@ -57,6 +57,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
+const Listing = require("./models/listing");
+app.get("/", async (req, res) => {
+  try {
+    const listings = await Listing.find({});
+    res.render("listings/index", { listings });
+  } catch (err) {
+    req.flash("error", "Cannot load listings");
+    res.redirect("/listings");
+  }
+});
+
 // Helmet CSP config
 app.use(
   helmet.contentSecurityPolicy({
