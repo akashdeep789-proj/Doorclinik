@@ -3,64 +3,39 @@ Doorclinik
 Doorclinik is a full-stack doctor appointment platform designed to simplify appointment booking for patients and clinic management for doctors. It provides features for doctor listings, booking appointments, real-time notifications, secure payments, and review management, all presented in a modern, user-friendly interface.
 
 Project Contributors - Akashdeep Kumar
-Features
-Patient Features
 
-🔍 Browse and search doctors by specialization or location
+Features-
 
-📆 Check availability and book appointments
+Patient Features-
+1. Signup-Login to see the list of doctors.
+2. Browse and search doctors by specialization or location
+3. Check availability and book appointments
+4. Receive notifications for confirmed appointments
+5. View appointment history and past reviews
+6. Leave reviews for doctors
 
-💬 Receive notifications for confirmed appointments
+Doctor Features-
+1. Signup-Login to add, edit, and manage clinic/his/her listings
+2. Upload and store his/her profile images using Cloudinary
+3. Communicate with patients via notifications
+4. Track appointments and earnings
+5. View reviews left by patients
 
-📄 View appointment history and past reviews
+Admin Features-
+1. Act as third party websites
 
-⭐ Leave reviews for doctors
+Project Highlights-
 
-Doctor Features
-
-🏥 Add, edit, and manage clinic listings
-
-📸 Upload and store doctor profile images using Cloudinary
-
-💬 Communicate with patients via notifications
-
-📈 Track appointments and earnings
-
-⭐ View reviews left by patients
-
-Admin Features
-
-🧑‍💼 Manage all users (doctors & patients)
-
-📦 Monitor doctor listings
-
-💬 Review user interactions
-
-⛔ Block or unblock user accounts
-
-📊 Access platform-wide metrics
-
-Project Highlights
-
-🔐 Authentication: Role-based login for Admin, Doctor, and Patient using Passport.js with session management.
-
-💬 Real-time Notifications: Appointment notifications for doctors powered by Socket.IO.
-
-🖼️ Cloudinary Integration: Store doctor profile images and clinic images securely, URLs saved in MongoDB.
-
-💬 MVC Structure: Implements the Model-View-Controller (MVC) pattern with models for data, views for EJS templates, and controllers/routes for application logic.
-
-💬 Mapbox Integration: Uses Mapbox API to display clinic locations interactively on maps with markers for better UX.
-
-💳 Razorpay Integration: Enables patients to pay for appointments online; payment status updates the booking status automatically.
-
-📅 Booking Flow: Full appointment booking system with date validation, slot availability checks, and conflict prevention.
-
-⭐ Reviews & Ratings: Patients can leave reviews for doctors, displayed dynamically.
-
-📁 Database: MongoDB backend using Mongoose with normalized schemas for users, doctors, bookings, and reviews.
-
-🛡️ Security: Helmet.js Content Security Policy and session-based authentication with MongoStore.
+1. Authentication: Role-based login for Admin, Doctor, and Patient using Passport.js with session management.
+2. Real-time Notifications: Appointment notifications for doctors powered by Socket.IO.
+3. Cloudinary Integration: Store doctor profile images and clinic images securely, URLs saved in MongoDB.
+4. MVC Structure: Implements the Model-View-Controller (MVC) pattern with models for data, views for EJS templates, and controllers/routes for application logic.
+5. Mapbox Integration: Uses Mapbox API to display clinic locations interactively on maps with markers for better UX.
+6. Razorpay Integration: Enables patients to pay for appointments online; payment status updates the booking status automatically.
+7. Booking Flow: Full appointment booking system with date validation, slot availability checks, and conflict prevention.
+8. Reviews & Ratings: Patients can leave reviews for doctors, displayed dynamically.
+9. Database: MongoDB Atlas backend using with normalized schemas for users, doctors, bookings, and reviews.
+10. Security: Helmet.js Content Security Policy and session-based authentication with MongoStore.
 
 Tech Stack
 🔹 Frontend
