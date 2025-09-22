@@ -55,7 +55,7 @@
       <!-- Left Nav -->
       <div class="navbar-nav">
         <a class="nav-link" href="/listings"><b>Explore Clinics</b></a>
-        <% if (currUser && currUser.role === 'admin') { %>
+        <% if (typeof currUser !== 'undefined' && currUser && currUser.role === 'admin') { %>
           <a class="nav-link" href="/admin/dashboard"><b>Admin Dashboard</b></a>
         <% } %>
       </div>
@@ -77,52 +77,53 @@
       </div>
 
       <!-- Right Nav -->
-<div class="navbar-nav ms-auto">
-  <% if (currUser) { %>
-    <% if (currUser.role !== 'admin') { %>
-      <a class="nav-link" href="/listings/<%= currUser._id %>/bookings/mine"><b>My Appointments</b></a>
-    <% } %>
-    <% if (currUser.role === 'admin') { %>
-      <a class="nav-link" href="/listings/new"><b>Add Clinic / Doctor</b></a>
-    <% } else { %>
-      <a class="nav-link" href="/listings/new"><b>Add your Clinic</b></a>
-    <% } %>
-    <a class="nav-link" href="/logout"><b>Logout</b></a>
-  <% } else { %>
-    <!-- Ambulance Dropdown -->
-<div class="dropdown">
-  <a class="nav-link dropdown-toggle text-danger" href="#" role="button" data-bs-toggle="dropdown">
-    🚑 <b>Ambulance</b>
-  </a>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item text-danger" href="/ambulance/book">Book Ambulance (Emergency)</a></li>
-    <li><a class="dropdown-item" href="/ambulance/driver/signup">Driver Registration</a></li>
-    <li><a class="dropdown-item" href="/ambulance/driver/login">Driver Login</a></li>
-  </ul>
-</div>
-    <!-- Separate options for Patient and Doctor -->
-    <div class="dropdown">
-      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-        <b>Patient</b>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="/patient/signup">Sign up</a></li>
-        <li><a class="dropdown-item" href="/patient/login">Log in</a></li>
-      </ul>
-    </div>
-    <div class="dropdown">
-      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-        <b>Doctor</b>
-      </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="/doctor/signup">Sign up</a></li>
-        <li><a class="dropdown-item" href="/doctor/login">Log in</a></li>
-      </ul>
-    </div>
-  <% } %>
-</div>
+      <div class="navbar-nav ms-auto">
+        <!-- NEW: Public AI Report link -->
+        <a class="nav-link text-warning" href="/ai-report"><b>AI Report Video</b></a>
 
-
+        <% if (typeof currUser !== 'undefined' && currUser) { %>
+          <% if (currUser.role !== 'admin') { %>
+            <a class="nav-link" href="/listings/<%= currUser._id %>/bookings/mine"><b>My Appointments</b></a>
+          <% } %>
+          <% if (currUser.role === 'admin') { %>
+            <a class="nav-link" href="/listings/new"><b>Add Clinic / Doctor</b></a>
+          <% } else { %>
+            <a class="nav-link" href="/listings/new"><b>Add your Clinic</b></a>
+          <% } %>
+          <a class="nav-link" href="/logout"><b>Logout</b></a>
+        <% } else { %>
+          <!-- Ambulance Dropdown -->
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle text-danger" href="#" role="button" data-bs-toggle="dropdown">
+              <b>Ambulance</b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item text-danger" href="/ambulance/book">Book Ambulance (Emergency)</a></li>
+              <li><a class="dropdown-item" href="/ambulance/driver/signup">Driver Registration</a></li>
+              <li><a class="dropdown-item" href="/ambulance/driver/login">Driver Login</a></li>
+            </ul>
+          </div>
+          <!-- Separate options for Patient and Doctor -->
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <b>Patient</b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/patient/signup">Sign up</a></li>
+              <li><a class="dropdown-item" href="/patient/login">Log in</a></li>
+            </ul>
+          </div>
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <b>Doctor</b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/doctor/signup">Sign up</a></li>
+              <li><a class="dropdown-item" href="/doctor/login">Log in</a></li>
+            </ul>
+          </div>
+        <% } %>
+      </div>
     </div>
   </div>
 </nav>

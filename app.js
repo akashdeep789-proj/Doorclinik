@@ -25,6 +25,9 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const ambulanceRouter = require('./routes/ambulance');
+app.use('/ambulance', ambulanceRouter);
+
 
 // Routers
 const listingRouter = require("./routes/listing.js");

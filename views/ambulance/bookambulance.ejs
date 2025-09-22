@@ -1,0 +1,61 @@
+<%- include('../includes/navbar') %>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Book an Ambulance</h2>
+
+  <!-- Flash Messages -->
+  <% if (success) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <form id="ambulanceForm" action="/ambulance/book" method="POST">
+    <div class="mb-3">
+      <label for="name" class="form-label">Full Name</label>
+      <input type="text" class="form-control" name="name" id="name" placeholder="Your full name" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone Number</label>
+      <div class="input-group">
+        <input type="text" class="form-control" name="phone" id="phone" placeholder="+91 9876543210" required>
+        <button type="button" id="sendOtpBtn" class="btn btn-primary">Send OTP</button>
+      </div>
+    </div>
+
+    <div class="mb-3" id="otpSection" style="display:none;">
+      <label for="otp" class="form-label">Enter OTP</label>
+      <input type="text" class="form-control" name="otp" id="otp" placeholder="Enter OTP here">
+      <button type="button" id="verifyOtpBtn" class="btn btn-success mt-2">Verify OTP</button>
+    </div>
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input type="text" class="form-control" name="location" id="location" placeholder="Enter your location" required>
+    </div>
+
+    <button type="submit" id="bookDriverBtn" class="btn btn-danger w-100" disabled>Book Driver</button>
+  </form>
+</div>
+
+<script>
+  // Example JS for OTP section
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const otpSection = document.getElementById('otpSection');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const bookDriverBtn = document.getElementById('bookDriverBtn');
+
+  sendOtpBtn.addEventListener('click', () => {
+    // Call API to send OTP (POST /ambulance/send-otp)
+    otpSection.style.display = 'block';
+    alert('OTP sent to your phone!');
+  });
+
+  verifyOtpBtn.addEventListener('click', () => {
+    // Call API to verify OTP (POST /ambulance/verify-otp)
+    bookDriverBtn.disabled = false;
+    alert('OTP verified! You can now book a driver.');
+  });
+</script>
