@@ -21,6 +21,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const Listing = require("./models/listing.js"); // ✅ add Listing model
 
 // Socket.io setup
 const { setupSocketIO, adminSockets } = require("./sockets/sockets");
@@ -55,13 +56,12 @@ function cleanupUploads() {
     });
   });
 }
-// Run cleanup on server start and every hour
 cleanupUploads();
 setInterval(cleanupUploads, 60 * 60 * 1000);
 
 // Routers
-const reportRoutes = require('./routes/reports');
-const ambulanceRouter = require('./routes/ambulance');
+const reportRoutes = require("./routes/reports");
+const ambulanceRouter = require("./routes/ambulance");
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
@@ -74,7 +74,8 @@ const helmet = require("helmet");
 
 // MongoDB Atlas connection
 const dbUrl = process.env.ATLASDB_URL;
-mongoose.connect(dbUrl)
+mongoose
+  .connect(dbUrl)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch(err => console.error("DB Error:", err));
 
@@ -138,13 +139,15 @@ const store = MongoStore.create({
   touchAfter: 24 * 3600,
 });
 
-app.use(session({
-  store,
-  secret: process.env.SECRET || "thisshouldbeabettersecret",
-  resave: false,
-  saveUninitialized: true,
-  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 },
-}));
+app.use(
+  session({
+    store,
+    secret: process.env.SECRET || "thisshouldbeabettersecret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 },
+  })
+);
 
 app.use(flash());
 
@@ -163,9 +166,30 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.get("/", async (req, res, next) => {
+  try {
+    const query = req.query.q || null;
+    let allListings = [];
+
+    if (query) {
+      // simple search (you can improve with regex later)
+      allListings = await Listing.find({
+        title: { $regex: query, $options: "i" },
+      });
+    } else {
+      allListings = await Listing.find({});
+    }
+
+    res.render("listings/index", { allListings, query });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Routes
-app.use('/ai-report', reportRoutes);
-app.use('/ambulance', ambulanceRouter);
+app.use("/ai-report", reportRoutes);
+app.use("/ambulance", ambulanceRouter);
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/listings/:id/bookings", bookingRouter);
