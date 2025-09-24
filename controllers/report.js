@@ -1,4 +1,4 @@
-const Report = require("../models/Report");
+const Report = require('../models/report');
 const { summarizeText } = require("../utils/hfSummarizer");
 const extractTextFromFile = require("../utils/extractText");
 const chunkText = require("../utils/chunkText");
