@@ -6,38 +6,28 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <h3 class="card-title text-center mb-4" style="color:#fe424d;">
-            Generate Your AI Medical Report Video
+            Generate Your Medical Report through AI
           </h3>
 
           <p class="text-center text-muted">
-            Upload your lab report (PDF or image) and get a **video summary** with easy-to-understand explanation.
+            Upload your lab report in pdf or .jpeg format to get the summary of the report.
           </p>
 
-          <!-- Upload Form -->
-          <form action="/ai-report/upload" method="POST" enctype="multipart/form-data">
+          <form action="/ai-report/upload-text" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-              <label for="reportFile" class="form-label">Choose your PDF or Image</label>
+              <label for="reportFile" class="form-label">Please upload here-</label>
               <input class="form-control" type="file" id="reportFile" name="reportFile" accept=".pdf,image/*" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="language" class="form-label">Select Language (Optional)</label>
-              <select class="form-select" name="language" id="language">
-                <option value="en" selected>English</option>
-                <option value="hi">Hindi</option>
-                <!-- Add more languages if needed -->
-              </select>
             </div>
 
             <div class="d-grid gap-2">
               <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #fe424d, #fc5c7d); border:none;">
-                Generate Video <i class="fa-solid fa-video"></i>
+                Generate Summary
               </button>
             </div>
           </form>
 
           <p class="text-center text-muted mt-3" style="font-size:0.9rem;">
-            No login required. Safe & secure.
+            No login required. Its safe & secure.
           </p>
         </div>
       </div>

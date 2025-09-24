@@ -9,13 +9,9 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-const { setupSocketIO, adminSockets } = require("./sockets/sockets");
-setupSocketIO(io);
-app.set("io", io);
-app.set("adminSockets", adminSockets);
-
-const mongoose = require("mongoose");
 const path = require("path");
+const fs = require("fs");
+const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
@@ -25,11 +21,47 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
-const ambulanceRouter = require('./routes/ambulance');
-app.use('/ambulance', ambulanceRouter);
 
+// Socket.io setup
+const { setupSocketIO, adminSockets } = require("./sockets/sockets");
+setupSocketIO(io);
+app.set("io", io);
+app.set("adminSockets", adminSockets);
+
+// ===== Automatically create uploads folder if it doesn't exist =====
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log(`Created folder: ${uploadDir}`);
+}
+
+// ===== Automatic cleanup of old uploads (older than 24h) =====
+const MAX_FILE_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+function cleanupUploads() {
+  if (!fs.existsSync(uploadDir)) return;
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) return console.error("Cleanup error:", err);
+    files.forEach(file => {
+      const filePath = path.join(uploadDir, file);
+      fs.stat(filePath, (err, stats) => {
+        if (err) return console.error(err);
+        if (Date.now() - stats.mtimeMs > MAX_FILE_AGE_MS) {
+          fs.unlink(filePath, err => {
+            if (err) console.error("Failed to delete file:", filePath, err);
+            else console.log("Deleted old upload:", filePath);
+          });
+        }
+      });
+    });
+  });
+}
+// Run cleanup on server start and every hour
+cleanupUploads();
+setInterval(cleanupUploads, 60 * 60 * 1000);
 
 // Routers
+const reportRoutes = require('./routes/reports');
+const ambulanceRouter = require('./routes/ambulance');
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
@@ -42,18 +74,14 @@ const helmet = require("helmet");
 
 // MongoDB Atlas connection
 const dbUrl = process.env.ATLASDB_URL;
-
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(dbUrl)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch(err => console.error("DB Error:", err));
 
 // View engine
+app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.engine("ejs", ejsMate);
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -106,24 +134,18 @@ app.use(
 // Session store with MongoDB Atlas
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
+  crypto: { secret: process.env.SECRET },
   touchAfter: 24 * 3600,
 });
 
-const sessionOptions = {
+app.use(session({
   store,
   secret: process.env.SECRET || "thisshouldbeabettersecret",
   resave: false,
   saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-  },
-};
+  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 },
+}));
 
-app.use(session(sessionOptions));
 app.use(flash());
 
 // Passport config
@@ -142,6 +164,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/ai-report', reportRoutes);
+app.use('/ambulance', ambulanceRouter);
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/listings/:id/bookings", bookingRouter);
