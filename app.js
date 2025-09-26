@@ -21,23 +21,23 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
-const Listing = require("./models/listing.js"); // ✅ add Listing model
+const Listing = require("./models/listing.js");
 
-// Socket.io setup
+
 const { setupSocketIO, adminSockets } = require("./sockets/sockets");
 setupSocketIO(io);
 app.set("io", io);
 app.set("adminSockets", adminSockets);
 
-// ===== Automatically create uploads folder if it doesn't exist =====
+
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
   console.log(`Created folder: ${uploadDir}`);
 }
 
-// ===== Automatic cleanup of old uploads (older than 24h) =====
-const MAX_FILE_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+const MAX_FILE_AGE_MS = 24 * 60 * 60 * 1000; 
 function cleanupUploads() {
   if (!fs.existsSync(uploadDir)) return;
   fs.readdir(uploadDir, (err, files) => {
@@ -49,7 +49,7 @@ function cleanupUploads() {
         if (Date.now() - stats.mtimeMs > MAX_FILE_AGE_MS) {
           fs.unlink(filePath, err => {
             if (err) console.error("Failed to delete file:", filePath, err);
-            else console.log("Deleted old upload:", filePath);
+            else console.log("🗑️ Deleted old upload:", filePath);
           });
         }
       });
@@ -57,9 +57,9 @@ function cleanupUploads() {
   });
 }
 cleanupUploads();
-setInterval(cleanupUploads, 60 * 60 * 1000);
+setInterval(cleanupUploads, 60 * 60 * 1000); 
 
-// Routers
+// ===== Routers =====
 const reportRoutes = require("./routes/reports");
 const ambulanceRouter = require("./routes/ambulance");
 const listingRouter = require("./routes/listing.js");
@@ -69,27 +69,27 @@ const adminRouter = require("./routes/admin.js");
 const bookingRouter = require("./routes/booking.js");
 const socialRoutes = require("./routes/social");
 
-// Helmet
+
 const helmet = require("helmet");
 
-// MongoDB Atlas connection
+
 const dbUrl = process.env.ATLASDB_URL;
 mongoose
   .connect(dbUrl)
-  .then(() => console.log("Connected to MongoDB Atlas"))
-  .catch(err => console.error("DB Error:", err));
+  .then(() => console.log(" Connected to MongoDB Atlas"))
+  .catch(err => console.error(" DB Error:", err));
 
-// View engine
+
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Middleware
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
-// Helmet CSP config
+
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -117,13 +117,16 @@ app.use(
         "https://*.tiles.mapbox.com",
         "https://events.mapbox.com",
         "https://api.mapbox.com",
+        process.env.WORKER_URL, 
       ],
       imgSrc: [
         "'self'",
         "data:",
+        "blob:",
         "https://res.cloudinary.com",
         "https://images.unsplash.com",
         "https://plus.unsplash.com",
+        process.env.WORKER_URL, 
       ],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
       objectSrc: ["'none'"],
@@ -132,7 +135,7 @@ app.use(
   })
 );
 
-// Session store with MongoDB Atlas
+
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: { secret: process.env.SECRET },
@@ -145,20 +148,20 @@ app.use(
     secret: process.env.SECRET || "thisshouldbeabettersecret",
     resave: false,
     saveUninitialized: true,
-    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 },
+    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, 
   })
 );
 
 app.use(flash());
 
-// Passport config
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Locals for templates
+
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -173,7 +176,6 @@ app.get("/", async (req, res, next) => {
     let allListings = [];
 
     if (query) {
-      // simple search (you can improve with regex later)
       allListings = await Listing.find({
         title: { $regex: query, $options: "i" },
       });
@@ -187,7 +189,7 @@ app.get("/", async (req, res, next) => {
   }
 });
 
-// Routes
+
 app.use("/ai-report", reportRoutes);
 app.use("/ambulance", ambulanceRouter);
 app.use("/listings", listingRouter);
@@ -197,20 +199,20 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/", socialRoutes);
 
-// 404 handler
+
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
-// Error handler
+
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "Something went wrong!";
   res.status(statusCode).render("error.ejs", { err });
 });
 
-// Start server
+
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(` Server running at http://localhost:${PORT}`);
 });

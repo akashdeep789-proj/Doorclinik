@@ -1,0 +1,43 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-center mb-4" style="color:#c41313;">
+            Generate AI Medical Image
+          </h3>
+
+          <p class="text-center text-muted">
+            Enter a prompt related to your medical report, presciptions to generate an image.
+          </p>
+
+          <form action="/ai-report/image/<%= report._id %>" method="POST">
+            <div class="mb-3">
+              <textarea class="form-control" name="prompt" rows="4" placeholder="Describe the image you want..." required><%= prompt || '' %></textarea>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-danger">Generate Image</button>
+            </div>
+          </form>
+
+          <% if (imageData) { %>
+          <hr class="my-4" />
+          <p class="text-center text-muted">Prompt: "<%= prompt %>"</p>
+          <div class="text-center my-4">
+            <img src="<%= imageData %>" class="img-fluid rounded shadow" alt="AI Generated Image" />
+          </div>
+          <div class="text-center">
+            <a href="<%= imageData %>" download="AI_Image.jpg" class="btn btn-success">Download Image</a>
+          </div>
+          <% } %>
+
+          <div class="d-grid gap-2 mt-4">
+            <a href="/ai-report/text-result/<%= report._id %>" class="btn btn-warning">Back to Report Summary</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

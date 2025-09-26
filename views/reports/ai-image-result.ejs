@@ -1,0 +1,29 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-center mb-4" style="color:#fe424d;">
+            Image Generated through AI
+          </h3>
+
+          <p class="text-center text-muted">Prompt: "<%= prompt %>"</p>
+
+          <div class="text-center my-4">
+            <img src="<%= imageData %>" class="img-fluid rounded shadow" alt="AI Generated Image" />
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <!-- Download button using the same base64 image -->
+            <a href="<%= imageData %>" class="btn btn-success" download="AI_Image.jpg"> Download Image</a>
+            
+            <a href="/ai-report/image/<%= report._id %>" class="btn btn-outline-danger">Generate Another Image</a>
+            <a href="/ai-report/text-result/<%= report._id %>" class="btn btn-warning">Back to Report Summary</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

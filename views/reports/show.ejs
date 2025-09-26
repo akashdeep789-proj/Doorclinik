@@ -18,20 +18,56 @@
                 <span class="visually-hidden">Loading...</span>
               </div>
             </div>
+
           <% } else if (report.status === 'done') { %>
+
+            <!-- Summary -->
             <h5 class="mt-3" style="color:#333;">Summary:</h5>
-            <p class="border p-3 bg-light rounded">
+            <p class="border p-3 bg-light rounded" id="summaryText">
               <%= report.summaryText %>
             </p>
 
-            <h5 class="mt-4" style="color:#333;">AI Video:</h5>
-            <div class="ratio ratio-16x9">
-              <video controls src="<%= report.videoUrl %>"></video>
+            <!-- AI Features -->
+            <h5 class="mt-4" style="color:#333;">AI Features:</h5>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+
+              <!-- Text-to-Speech -->
+              <button id="ttsBtn" class="btn btn-outline-success">
+                🎙️ Listen to Summary
+              </button>
+
+              <!-- Video -->
+              <a href="/ai-report/video-result/<%= report._id %>" class="btn btn-outline-warning">
+                🎥 Generate Video
+              </a>
+
+              <!-- Image Generator -->
+              <a href="/ai-report/image/<%= report._id %>" class="btn btn-outline-danger">
+                 Generate Image
+              </a>
+
+              <!-- Translate -->
+              <select id="languageSelect" class="form-select">
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="hi">Hindi</option>
+                <option value="zh">Chinese</option>
+                <option value="ar">Arabic</option>
+              </select>
+              <button id="translateBtn" class="btn btn-outline-info">Translate Summary</button>
             </div>
 
+            <!-- TTS Audio Player -->
+            <div id="ttsPlayerContainer" class="mt-3" style="display:none;">
+              <audio id="ttsPlayer" controls class="w-100"></audio>
+            </div>
+
+            <!-- Upload Another Report -->
             <div class="d-grid gap-2 mt-4">
               <a href="/ai-report" class="btn btn-warning">Upload Another Report</a>
             </div>
+
           <% } else if (report.status === 'error') { %>
             <p class="text-center text-danger">
               Oops! Something went wrong: <%= report.errorMessage %>
@@ -45,3 +81,34 @@
     </div>
   </div>
 </div>
+
+<script>
+  const reportId = "<%= report._id %>";
+
+  // TEXT-TO-SPEECH
+  document.getElementById("ttsBtn")?.addEventListener("click", async () => {
+    const res = await fetch(`/ai-report/tts/${reportId}`);
+    if (res.ok) {
+      const audioUrl = await res.text();
+      const player = document.getElementById("ttsPlayer");
+      player.src = audioUrl;
+      document.getElementById("ttsPlayerContainer").style.display = "block";
+      player.play();
+    } else {
+      alert("Error generating speech");
+    }
+  });
+
+  // TRANSLATE
+  document.getElementById("translateBtn")?.addEventListener("click", async () => {
+    const lang = document.getElementById("languageSelect").value;
+    const res = await fetch(`/ai-report/translate/${reportId}?lang=${lang}`);
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById("summaryText").innerText = data.translatedText;
+    } else {
+      alert("Error translating summary");
+    }
+  });
+</script>
+

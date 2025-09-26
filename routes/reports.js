@@ -5,14 +5,11 @@ const path = require("path");
 const reportController = require("../controllers/report");
 const fs = require("fs");
 
-// ===== Automatically create uploads folder if it doesn't exist =====
+// uploads dir creation (keep existing)
 const uploadDir = "uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-  console.log(`Created folder: ${uploadDir}`);
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// File storage setup
+// multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
@@ -22,24 +19,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Upload form page
+// ===== Routes =====
 router.get("/", reportController.showUploadForm);
-
-// POST → handle text summary only
 router.post("/upload-text", upload.single("reportFile"), reportController.handleTextPreview);
-
-// GET → show text summary
 router.get("/text-result/:reportId", reportController.showTextResult);
-
-// GET → generate/show video (existing)
 router.get("/video-result/:reportId", reportController.showVideoResult);
-
-// TTS route returns URL
 router.get("/tts/:reportId", reportController.generateTTS);
-
-// Translation route returns JSON
 router.get("/translate/:reportId", reportController.translateSummary);
 
-
+// AI Image routes (temporary, no disk save)
+router.get("/image/:reportId", reportController.renderImageForm);
+router.post("/image/:reportId", reportController.generateAIImage);
 
 module.exports = router;

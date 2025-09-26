@@ -2,18 +2,16 @@ const Report = require('../models/report');
 const { summarizeText } = require("../utils/hfSummarizer");
 const extractTextFromFile = require("../utils/extractText");
 const chunkText = require("../utils/chunkText");
-const fs = require("fs");
-const path = require("path");
 const tts = require("../utils/tts");
 const translateText = require("../utils/translate");
+const axios = require("axios");
 
-// Show upload page
-module.exports.showUploadForm = (req, res) => {
+// ===== Upload and Text Summary =====
+const showUploadForm = (req, res) => {
   res.render("reports/upload");
 };
 
-// Handle upload and generate text summary with chunking
-module.exports.handleTextPreview = async (req, res) => {
+const handleTextPreview = async (req, res) => {
   try {
     if (!req.file) {
       req.flash("error", "Please upload a PDF or image file!");
@@ -21,23 +19,20 @@ module.exports.handleTextPreview = async (req, res) => {
     }
 
     const text = await extractTextFromFile(req.file.path);
-
-    // Chunk long text to avoid Hugging Face errors
-    const chunks = chunkText(text, 1500);
+    const chunks = chunkText(text, 1500); 
     let finalSummary = "";
 
     for (const chunk of chunks) {
       const chunkSummary = await summarizeText(chunk);
       finalSummary += chunkSummary + " ";
     }
-
     finalSummary = finalSummary.trim();
 
     const newReport = new Report({
       filePath: req.file.path,
-      status: "done",      // summary generated
+      status: "done",
       summaryText: finalSummary,
-      videoUrl: "",        // video not generated yet
+      videoUrl: "",
     });
     await newReport.save();
 
@@ -49,8 +44,8 @@ module.exports.handleTextPreview = async (req, res) => {
   }
 };
 
-// Show text summary page
-module.exports.showTextResult = async (req, res) => {
+// ===== Display Text / Video Results =====
+const showTextResult = async (req, res) => {
   const report = await Report.findById(req.params.reportId);
   if (!report) {
     req.flash("error", "Report not found");
@@ -59,8 +54,7 @@ module.exports.showTextResult = async (req, res) => {
   res.render("reports/textResult", { report });
 };
 
-// Show video (existing)
-module.exports.showVideoResult = async (req, res) => {
+const showVideoResult = async (req, res) => {
   const report = await Report.findById(req.params.reportId);
   if (!report) {
     req.flash("error", "Report not found");
@@ -69,28 +63,26 @@ module.exports.showVideoResult = async (req, res) => {
   res.render("reports/videoResult", { report });
 };
 
-module.exports.generateTTS = async (req, res) => {
+// ===== TTS =====
+const generateTTS = async (req, res) => {
   const report = await Report.findById(req.params.reportId);
   if (!report) return res.status(404).send("Report not found");
 
   try {
-    const audioPath = await tts(report.summaryText, report._id);
-    // return relative path for frontend
-    const relativePath = `/uploads/audio/${report._id}.mp3`;
-    res.send(relativePath);
+    await tts(report.summaryText, report._id);
+    res.send(`/uploads/audio/${report._id}.mp3`);
   } catch (err) {
     console.error(err);
     res.status(500).send("Error generating speech");
   }
 };
 
-
-module.exports.translateSummary = async (req, res) => {
+// ===== Translation =====
+const translateSummary = async (req, res) => {
   const report = await Report.findById(req.params.reportId);
-  if (!report) return res.status(404).send({ error: "Report not found" });
+  if (!report) return res.status(404).json({ error: "Report not found" });
 
   const targetLang = req.query.lang || "es";
-
   try {
     const translatedText = await translateText(report.summaryText, targetLang);
     res.json({ translatedText });
@@ -100,3 +92,62 @@ module.exports.translateSummary = async (req, res) => {
   }
 };
 
+const renderImageForm = async (req, res) => {
+  const report = await Report.findById(req.params.reportId);
+  if (!report) {
+    req.flash("error", "Report not found");
+    return res.redirect("/ai-report");
+  }
+  // Render form without prompt/imageData initially
+  res.render("reports/ai-image-form", { report, prompt: null, imageData: null });
+};
+
+
+// ===== AI Image Generation (temporary, no disk save) =====
+const generateAIImage = async (req, res) => {
+  const { reportId } = req.params;
+  const { prompt } = req.body;
+
+  if (!prompt || prompt.trim() === "") {
+    req.flash("error", "Please enter a prompt.");
+    return res.redirect(`/ai-report/image/${reportId}`);
+  }
+
+  try {
+    const response = await axios.post(
+      process.env.WORKER_URL,
+      { prompt },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WORKER_KEY}`,
+          "Content-Type": "application/json",
+        },
+        responseType: "arraybuffer",
+        timeout: 120000,
+      }
+    );
+
+    const mime = response.headers["content-type"];
+    const base64 = Buffer.from(response.data, "binary").toString("base64");
+    const imageData = `data:${mime};base64,${base64}`;
+
+    const report = await Report.findById(reportId);
+    res.render("reports/ai-image-result", { report, prompt, imageData });
+  } catch (err) {
+    console.error("Worker API Error:", err.response?.data || err.message);
+    req.flash("error", "Failed to generate AI image via Worker.");
+    res.redirect(`/ai-report/text-result/${reportId}`);
+  }
+};
+
+// ===== Export all functions =====
+module.exports = {
+  showUploadForm,
+  handleTextPreview,
+  showTextResult,
+  showVideoResult,
+  generateTTS,
+  translateSummary,
+  renderImageForm,
+  generateAIImage
+};
