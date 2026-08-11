@@ -6,9 +6,8 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 
+// ===== Imports =====
 const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
@@ -20,35 +19,36 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const helmet = require("helmet");
 const User = require("./models/user.js");
 const Listing = require("./models/listing.js");
 
-
+//  Import and setup Socket.IO correctly
 const { setupSocketIO, adminSockets } = require("./sockets/sockets");
-setupSocketIO(io);
+const io = setupSocketIO(server); // pass server, not io
 app.set("io", io);
 app.set("adminSockets", adminSockets);
 
-
+// ===== Upload Folder Setup =====
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
   console.log(`Created folder: ${uploadDir}`);
 }
 
-
-const MAX_FILE_AGE_MS = 24 * 60 * 60 * 1000; 
+// Auto-clean old uploads
+const MAX_FILE_AGE_MS = 24 * 60 * 60 * 1000;
 function cleanupUploads() {
   if (!fs.existsSync(uploadDir)) return;
   fs.readdir(uploadDir, (err, files) => {
     if (err) return console.error("Cleanup error:", err);
-    files.forEach(file => {
+    files.forEach((file) => {
       const filePath = path.join(uploadDir, file);
       fs.stat(filePath, (err, stats) => {
         if (err) return console.error(err);
         if (Date.now() - stats.mtimeMs > MAX_FILE_AGE_MS) {
-          fs.unlink(filePath, err => {
-            if (err) console.error("Failed to delete file:", filePath, err);
+          fs.unlink(filePath, (err) => {
+            if (err) console.error("Failed to delete:", filePath, err);
             else console.log("🗑️ Deleted old upload:", filePath);
           });
         }
@@ -57,7 +57,7 @@ function cleanupUploads() {
   });
 }
 cleanupUploads();
-setInterval(cleanupUploads, 60 * 60 * 1000); 
+setInterval(cleanupUploads, 60 * 60 * 1000);
 
 // ===== Routers =====
 const reportRoutes = require("./routes/reports");
@@ -69,27 +69,23 @@ const adminRouter = require("./routes/admin.js");
 const bookingRouter = require("./routes/booking.js");
 const socialRoutes = require("./routes/social");
 
-
-const helmet = require("helmet");
-
-
+// ===== Database Connection =====
 const dbUrl = process.env.ATLASDB_URL;
 mongoose
   .connect(dbUrl)
   .then(() => console.log(" Connected to MongoDB Atlas"))
-  .catch(err => console.error(" DB Error:", err));
+  .catch((err) => console.error(" DB Error:", err));
 
-
+// ===== App Config =====
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
-
+//  Helmet Security (Allow WebSocket connections)
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -117,8 +113,11 @@ app.use(
         "https://*.tiles.mapbox.com",
         "https://events.mapbox.com",
         "https://api.mapbox.com",
-        process.env.WORKER_URL, 
-      ],
+        "wss://doorclinik.onrender.com", //  allow WebSocket
+        "https://doorclinik.onrender.com",
+        "http://localhost:3000",
+        process.env.WORKER_URL,
+      ].filter(Boolean),
       imgSrc: [
         "'self'",
         "data:",
@@ -126,7 +125,6 @@ app.use(
         "https://res.cloudinary.com",
         "https://images.unsplash.com",
         "https://plus.unsplash.com",
-        process.env.WORKER_URL, 
       ],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
       objectSrc: ["'none'"],
@@ -135,7 +133,7 @@ app.use(
   })
 );
 
-
+// ===== Session & Auth =====
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: { secret: process.env.SECRET },
@@ -148,20 +146,30 @@ app.use(
     secret: process.env.SECRET || "thisshouldbeabettersecret",
     resave: false,
     saveUninitialized: true,
-    cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, 
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   })
 );
 
 app.use(flash());
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+const admin = require("./firebase");
 
+admin.auth().listUsers(1)
+  .then(() => console.log(" Firebase Admin SDK connected successfully"))
+  .catch((err) => console.error(" Firebase connection failed:", err.message));
+
+
+// ===== Locals =====
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -169,26 +177,18 @@ app.use((req, res, next) => {
   next();
 });
 
-
+// ===== Routes =====
 app.get("/", async (req, res, next) => {
   try {
     const query = req.query.q || null;
-    let allListings = [];
-
-    if (query) {
-      allListings = await Listing.find({
-        title: { $regex: query, $options: "i" },
-      });
-    } else {
-      allListings = await Listing.find({});
-    }
-
+    const allListings = query
+      ? await Listing.find({ title: { $regex: query, $options: "i" } })
+      : await Listing.find({});
     res.render("listings/index", { allListings, query });
   } catch (err) {
     next(err);
   }
 });
-
 
 app.use("/ai-report", reportRoutes);
 app.use("/ambulance", ambulanceRouter);
@@ -199,11 +199,10 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 app.use("/", socialRoutes);
 
-
+// ===== Error Handlers =====
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
-
 
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
@@ -211,8 +210,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error.ejs", { err });
 });
 
-
+// ===== Start Server =====
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(` Server running at http://localhost:${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });

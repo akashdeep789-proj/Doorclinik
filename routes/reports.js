@@ -5,7 +5,7 @@ const path = require("path");
 const reportController = require("../controllers/report");
 const fs = require("fs");
 
-// uploads dir creation (keep existing)
+// uploads dir creation
 const uploadDir = "uploads";
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -27,8 +27,12 @@ router.get("/video-result/:reportId", reportController.showVideoResult);
 router.get("/tts/:reportId", reportController.generateTTS);
 router.get("/translate/:reportId", reportController.translateSummary);
 
-// AI Image routes (temporary, no disk save)
+// AI Image
 router.get("/image/:reportId", reportController.renderImageForm);
 router.post("/image/:reportId", reportController.generateAIImage);
+
+// RAG Query
+router.get("/query/:reportId", reportController.renderQueryForm);
+router.post("/query/:reportId", reportController.handleQuery);
 
 module.exports = router;

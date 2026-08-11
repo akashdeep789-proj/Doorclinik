@@ -1,5 +1,7 @@
 // sockets/sockets.js
 const jwt = require("jsonwebtoken");
+const { Server } = require("socket.io");
+
 const adminSockets = new Map(); // adminId -> Set of socketIds
 
 /**
@@ -9,11 +11,15 @@ function authenticateSocket(socket, next) {
   try {
     const token = socket.handshake.auth?.token;
     if (!token) {
+      console.warn("❌ Socket connection rejected: Missing token");
       return next(new Error("Authentication token missing"));
     }
 
     // Verify JWT (use same secret as your Express app)
-    const payload = jwt.verify(token, process.env.JWT_SECRET || "mysupersecretcode");
+    const payload = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "mysupersecretcode"
+    );
 
     // Attach user info to socket
     socket.data.userId = payload.id;
@@ -21,19 +27,35 @@ function authenticateSocket(socket, next) {
 
     return next();
   } catch (err) {
-    console.error("Socket authentication failed:", err.message);
+    console.error("❌ Socket authentication failed:", err.message);
     return next(new Error("Unauthorized socket connection"));
   }
 }
 
 /**
- * Socket.IO setup
+ * Initialize Socket.IO server
  */
-function setupSocketIO(io) {
-  io.use(authenticateSocket); // apply auth middleware to all sockets
+function setupSocketIO(server) {
+  const io = new Server(server, {
+    cors: {
+      origin: [
+        "https://doorclinik.vercel.app", // ✅ your deployed frontend
+        "http://localhost:3000",         // ✅ local dev frontend
+      ],
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+    transports: ["websocket", "polling"], // ✅ ensure fallback
+    allowEIO3: true, // ✅ backward compatibility
+    pingTimeout: 60000, // ✅ prevent early disconnects
+    pingInterval: 25000,
+  });
+
+  // 🔒 Use authentication middleware
+  io.use(authenticateSocket);
 
   io.on("connection", (socket) => {
-    console.log(` Socket connected: ${socket.id} [Role: ${socket.data.role}]`);
+    console.log(`✅ Socket connected: ${socket.id} [Role: ${socket.data.role}]`);
 
     // --- ADMIN REGISTRATION ---
     if (socket.data.role === "admin") {
@@ -42,8 +64,7 @@ function setupSocketIO(io) {
         adminSockets.set(adminId, new Set());
       }
       adminSockets.get(adminId).add(socket.id);
-
-      console.log(` Admin registered: ${adminId} -> ${socket.id}`);
+      console.log(`🧑‍💼 Admin registered: ${adminId} -> ${socket.id}`);
     }
 
     // --- GENERIC EVENTS ---
@@ -51,7 +72,7 @@ function setupSocketIO(io) {
       socket.emit("pongServer", { message: "Server is alive" });
     });
 
-    // Example: Notify admin when a new booking is created
+    // --- Notify Admin ---
     socket.on("newBooking", (bookingData) => {
       if (!bookingData.adminId) return;
       const sockets = adminSockets.get(bookingData.adminId);
@@ -66,7 +87,7 @@ function setupSocketIO(io) {
     });
 
     // --- DISCONNECT ---
-    socket.on("disconnect", () => {
+    socket.on("disconnect", (reason) => {
       if (socket.data.role === "admin") {
         const adminId = socket.data.userId;
         const s = adminSockets.get(adminId);
@@ -74,17 +95,19 @@ function setupSocketIO(io) {
           s.delete(socket.id);
           if (s.size === 0) adminSockets.delete(adminId);
         }
-        console.log(` Admin disconnected: ${adminId} <- ${socket.id}`);
+        console.log(`❌ Admin disconnected: ${adminId} <- ${socket.id} (${reason})`);
       } else {
-        console.log(` Socket disconnected: ${socket.id}`);
+        console.log(`❌ Socket disconnected: ${socket.id} (${reason})`);
       }
     });
 
     // --- ERROR HANDLER ---
     socket.on("error", (err) => {
-      console.error(` Socket error [${socket.id}]:`, err.message);
+      console.error(`⚠️ Socket error [${socket.id}]:`, err.message);
     });
   });
+
+  return io;
 }
 
 module.exports = { setupSocketIO, adminSockets };

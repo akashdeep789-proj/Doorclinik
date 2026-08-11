@@ -31,7 +31,6 @@ router.route("/doctor/login")
     (req, res) => userController.login(req, res, "doctor")
   );
 
-
 // ------------------ LOGOUT ------------------
 router.get("/logout", userController.logout);
 
