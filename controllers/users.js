@@ -26,8 +26,6 @@ module.exports.signup = async (req, res, next, role) => {
         const newUser = new User({ email, username, role });
         const registeredUser = await User.register(newUser, password);
 
-        
-
         // ✅ Step 3: Continue with your normal login redirect
         req.login(registeredUser, (err) => {
             if (err) return next(err);
