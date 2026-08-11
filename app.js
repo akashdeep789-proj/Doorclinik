@@ -162,11 +162,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-const admin = require("./firebase");
 
-admin.auth().listUsers(1)
-  .then(() => console.log(" Firebase Admin SDK connected successfully"))
-  .catch((err) => console.error(" Firebase connection failed:", err.message));
 
 
 // ===== Locals =====
