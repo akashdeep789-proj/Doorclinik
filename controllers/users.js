@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const admin = require("../firebase"); // ✅ Firebase Admin SDK
+
 
 // ---------------- Render Forms ----------------
 module.exports.renderSignupForm = (req, res) => {
@@ -26,17 +26,7 @@ module.exports.signup = async (req, res, next, role) => {
         const newUser = new User({ email, username, role });
         const registeredUser = await User.register(newUser, password);
 
-        // ✅ Step 2: Also register in Firebase Auth
-        try {
-            await admin.auth().createUser({
-                email: email,
-                password: password,
-                displayName: username,
-            });
-            console.log(`🔥 Firebase user created successfully: ${email}`);
-        } catch (firebaseError) {
-            console.error("⚠️ Firebase Error:", firebaseError.message);
-        }
+       
 
         // ✅ Step 3: Continue with your normal login redirect
         req.login(registeredUser, (err) => {
