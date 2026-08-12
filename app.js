@@ -71,10 +71,12 @@ const socialRoutes = require("./routes/social");
 
 // ===== Database Connection =====
 const dbUrl = process.env.ATLASDB_URL;
-mongoose
-  .connect(dbUrl)
-  .then(() => console.log(" Connected to MongoDB Atlas"))
-  .catch((err) => console.error(" DB Error:", err));
+if (process.env.NODE_ENV !== "test") {
+  mongoose
+    .connect(dbUrl)
+    .then(() => console.log(" Connected to MongoDB Atlas"))
+    .catch((err) => console.error(" DB Error:", err));
+}
 
 // ===== App Config =====
 app.engine("ejs", ejsMate);
@@ -208,6 +210,10 @@ app.use((err, req, res, next) => {
 
 // ===== Start Server =====
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(` Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

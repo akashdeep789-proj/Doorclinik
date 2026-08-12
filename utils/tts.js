@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const googleTTS = require("google-tts-api"); // install: npm i google-tts-api
-const fetch = require("node-fetch");
+
 
 // Function: generate TTS audio from text
 async function generateTTS(text, reportId, lang = "en") {

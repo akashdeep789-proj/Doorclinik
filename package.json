@@ -8,7 +8,13 @@
    "scripts": {
       "start": "node app.js",
       "dev": "nodemon app.js",
-      "test": "echo \"Error: no test specified\" && exit 1"
+      "test": "jest --runInBand --forceExit"
+   },
+   "jest": {
+      "setupFilesAfterEnv": [
+         "<rootDir>/tests/setup.js"
+      ],
+      "testEnvironment": "node"
    },
    "dependencies": {
       "@mapbox/mapbox-sdk": "^0.16.2",
@@ -25,7 +31,6 @@
       "ejs-mate": "^4.0.0",
       "express": "^5.1.0",
       "express-session": "^1.18.2",
-      "firebase-admin": "^13.6.0",
       "form-data": "^4.0.4",
       "google-tts-api": "^2.0.2",
       "helmet": "^8.1.0",
@@ -35,7 +40,6 @@
       "mongoose": "^8.18.1",
       "multer": "^2.0.2",
       "multer-storage-cloudinary": "^4.0.0",
-      "node-fetch": "^3.3.2",
       "nodemailer": "^7.0.6",
       "openai": "^5.20.2",
       "passport": "^0.7.0",
@@ -47,7 +51,10 @@
       "tesseract.js": "^6.0.1"
    },
    "devDependencies": {
-      "nodemon": "^3.1.10"
+      "jest": "^30.4.2",
+      "mongodb-memory-server": "^11.2.0",
+      "nodemon": "^3.1.10",
+      "supertest": "^7.2.2"
    },
    "description": "Doorclinik",
    "keywords": [],
