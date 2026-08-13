@@ -9,7 +9,7 @@ require("dotenv").config();
 async function summarizeText(text) {
   try {
     const response = await axios.post(
-      "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6",
+      "https://router.huggingface.co/hf-inference/models/sshleifer/distilbart-cnn-12-6",
       { inputs: text },
       { headers: { Authorization: `Bearer ${process.env.HF_API_KEY}` } }
     );

@@ -1,29 +1,66 @@
-const mongoose = require("mongoose");
-const initData = require("./data.js");
-const Listing = require("../models/listing.js");
-
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-
-main()
-  .then(() => {
-    console.log("connected to DB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-async function main() {
-  await mongoose.connect(MONGO_URL);
+// init/index.js
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
-const initDB = async () => {
-  await Listing.deleteMany({});
-  initData.data = initData.data.map((obj) => ({
-    ...obj,
-    owner: "652d0081ae547c5d37e56b5f",
-  }))
-  await Listing.insertMany(initData.data);
-  console.log("data was initialized");
-};
+const mongoose = require("mongoose");
+const User = require("../models/user");
+const Listing = require("../models/listing");
+const Specialization = require("../models/specialization"); // adjust path if your model file is named differently
+const { data: sampleDoctors } = require("./data.js");
 
-initDB();
+const dbUrl = process.env.ATLASDB_URL;
+
+async function seedDB() {
+  await mongoose.connect(dbUrl);
+  console.log("Connected to MongoDB Atlas for seeding");
+
+  for (const doctorData of sampleDoctors) {
+    const usernameSlug = doctorData.title
+      .toLowerCase()
+      .replace(/^dr\.\s*/, "")
+      .replace(/[^a-z0-9]+/g, "");
+
+    const username = `dr_${usernameSlug}`;
+    const email = `${username}@doorclinik-demo.com`;
+
+    let doctorUser = await User.findOne({ username });
+    if (!doctorUser) {
+      doctorUser = await User.register(
+        new User({ username, email, role: "doctor" }),
+        "DemoPass123!"
+      );
+      console.log(`Created doctor user: ${username}`);
+    }
+
+    const existingListing = await Listing.findOne({ title: doctorData.title });
+    if (existingListing) {
+      console.log(`Listing already exists, skipping: ${doctorData.title}`);
+      continue;
+    }
+
+    const newListing = new Listing({
+      ...doctorData,
+      owner: doctorUser._id,
+    });
+    await newListing.save();
+    console.log(`Created listing: ${doctorData.title}`);
+
+    let spec = await Specialization.findOne({ name: newListing.specialization });
+    if (!spec) {
+      spec = new Specialization({ name: newListing.specialization, doctors: [] });
+    }
+    if (!spec.doctors.includes(newListing._id)) {
+      spec.doctors.push(newListing._id);
+    }
+    await spec.save();
+  }
+
+  console.log("Seeding complete.");
+  await mongoose.disconnect();
+}
+
+seedDB().catch((err) => {
+  console.error("Seeding failed:", err);
+  process.exit(1);
+});

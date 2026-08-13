@@ -3,7 +3,7 @@ const axios = require("axios");
 async function generateEmbedding(text) {
   try {
     const response = await axios.post(
-      "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+      "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction",
       { inputs: text },
       {
         headers: {
@@ -13,12 +13,19 @@ async function generateEmbedding(text) {
       }
     );
 
-    if (response.data && Array.isArray(response.data) && response.data[0]?.embedding) {
-      return response.data[0].embedding;
-    } else {
-      console.warn("No embedding returned for text chunk");
-      return null;
+    const data = response.data;
+
+    // New endpoint returns a flat array of numbers for a single input,
+    // but handle a nested array shape too, just in case.
+    if (Array.isArray(data) && typeof data[0] === "number") {
+      return data;
     }
+    if (Array.isArray(data) && Array.isArray(data[0])) {
+      return data[0];
+    }
+
+    console.warn("Unexpected embedding response shape:", data);
+    return null;
   } catch (err) {
     console.error("Embedding error:", err.response?.data || err.message);
     return null;

@@ -6,7 +6,7 @@ async function translateText(text, targetLang = "es") {
     // Hugging Face translation model
     const model = "Helsinki-NLP/opus-mt-en-" + targetLang;
     const response = await axios.post(
-      `https://api-inference.huggingface.co/models/${model}`,
+      `https://router.huggingface.co/hf-inference/models/${model}`,
       { inputs: text },
       { headers: { Authorization: `Bearer ${process.env.HF_API_KEY}` } }
     );
