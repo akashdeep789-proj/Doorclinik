@@ -1,38 +1,90 @@
-<% layout("/layouts/boilerplate") %>
+<% layout("/layouts/boilerplate") %>    
 
-<div class="clinic-filters">
-  <a href="/listings/specialization/General Physician" class="clinic-filter-pill">
-    <i class="fa-solid fa-user-doctor"></i> General Physicians
-  </a>
-  <a href="/listings/specialization/Cardiologist" class="clinic-filter-pill">
-    <i class="fa-solid fa-heart-pulse"></i> Cardiologists
-  </a>
-  <a href="/listings/specialization/Neurologist" class="clinic-filter-pill">
-    <i class="fa-solid fa-brain"></i> Neurologists
-  </a>
-  <a href="/listings/specialization/Dentist" class="clinic-filter-pill">
-    <i class="fa-solid fa-tooth"></i> Dentists
-  </a>
-  <a href="/listings/specialization/Eye Specialist" class="clinic-filter-pill">
-    <i class="fa-solid fa-eye"></i> Eye Specialists
-  </a>
-  <a href="/listings/specialization/Pediatrician" class="clinic-filter-pill">
-    <i class="fa-solid fa-baby"></i> Pediatricians
-  </a>
-  <a href="/listings/specialization/Vaccination" class="clinic-filter-pill">
-    <i class="fa-solid fa-syringe"></i> Vaccinations
-  </a>
-  <a href="/listings/specialization/Diagnostics" class="clinic-filter-pill">
-    <i class="fa-solid fa-x-ray"></i> Diagnostics
-  </a>
+<style>
+  #filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
 
-  <div class="clinic-tax-toggle">
-    <div class="form-check-reverse form-switch mb-0">
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    margin-top: 2rem;
+    opacity: 0.7;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+  }
+
+  .tax-info {
+    display: none;
+  }
+
+  .filter i {
+    color: darkgreen; /* 🔹 icon color changed to dark green */
+    font-size: 2rem;
+  }
+
+  .tax-toggle {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.2;
+    padding: 1rem;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+  }
+</style>    
+
+<div id="filters">
+  <a href="/listings/specialization/General Physician" class="filter">
+  <div><i class="fa-solid fa-user-doctor"></i></div>
+  <p>General Physicians</p>
+</a>
+<a href="/listings/specialization/Cardiologist" class="filter">
+  <div><i class="fa-solid fa-heart-pulse"></i></div>
+  <p>Cardiologists</p>
+</a>
+<a href="/listings/specialization/Neurologist" class="filter">
+  <div><i class="fa-solid fa-brain"></i></div>
+  <p>Neurologists</p>
+</a>
+<a href="/listings/specialization/Dentist" class="filter">
+  <div><i class="fa-solid fa-tooth"></i></div>
+  <p>Dentists</p>
+</a>
+<a href="/listings/specialization/Eye Specialist" class="filter">
+  <div><i class="fa-solid fa-eye"></i></div>
+  <p>Eye Specialists</p>
+</a>
+<a href="/listings/specialization/Pediatrician" class="filter">
+  <div><i class="fa-solid fa-baby"></i></div>
+  <p>Pediatricians</p>
+</a>
+<a href="/listings/specialization/Vaccination" class="filter">
+  <div><i class="fa-solid fa-syringe"></i></div>
+  <p>Vaccinations</p>
+</a>
+<a href="/listings/specialization/Diagnostics" class="filter">
+  <div><i class="fa-solid fa-x-ray"></i></div>
+  <p>Diagnostics</p>
+</a>
+
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
       <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-      <label class="form-check-label" for="switchCheckDefault">Show fee with GST</label>
+      <label class="form-check-label" for="switchCheckDefault">Show Consultation Fee with GST</label>
     </div>
   </div>
-</div>
+</div>    
 
 <% if (allListings.length === 0) { %>
   <div class="text-center mt-4">
@@ -45,30 +97,37 @@
 <% } %>
 
 <% if (allListings.length > 0) { %>
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-3 mt-1 mb-4">
-    <% for (let listing of allListings) { %>
-      <div class="col">
-        <a href="/listings/<%= listing._id %>" class="doctor-card">
-          <img src="<%= listing.image.url %>" class="doctor-card-img" alt="doctor_image" />
-          <div class="doctor-card-body">
-            <div class="doctor-card-name">Dr. <%= listing.title %></div>
-            <div class="doctor-card-spec"><%= listing.specialization %></div>
-            <div class="doctor-card-fee">
-              &#8377;<%= listing.price.toLocaleString("en-IN") %> consultation
-              <span class="tax-info"> &nbsp;+18% GST</span>
-            </div>
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for (let listing of allListings) { %>  
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div class="card col listing-card">
+          <img 
+            src="<%= listing.image.url %>" 
+            class="card-img-top" 
+            alt="doctor_image" 
+            style="height: 20rem" 
+          />
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b> <%= listing.title %></b><br>
+              <small><i><%= listing.specialization %></i></small><br>
+              Consultation Fee: ₹<%= listing.price.toLocaleString("en-IN") %>
+              <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
+            </p>          
           </div>
-        </a>
-      </div>
+        </div>
+      </a>
     <% } %>
   </div>
 <% } %>
 
+
 <script>
-  let taxSwitch = document.getElementById("switchCheckDefault");
+  let taxSwitch = document.getElementById("switchCheckDefault"); 
   taxSwitch.addEventListener("click", () => {
-    let taxInfo = document.getElementsByClassName("tax-info");
-    for (let info of taxInfo) {
+    let taxInfo = document.getElementsByClassName("tax-info"); 
+    for (let info of taxInfo) {                                
       if (info.style.display !== "inline") {
         info.style.display = "inline";
       } else {
