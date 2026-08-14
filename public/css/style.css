@@ -150,3 +150,85 @@ footer {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
+/* ===== Homepage — filter pills + doctor grid ===== */
+.clinic-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 1.5rem 0 2rem;
+}
+
+.clinic-filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--clinic-primary-light);
+  border: 1px solid var(--clinic-border);
+  border-radius: 999px;
+  padding: 0.5rem 1.05rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--clinic-primary-dark);
+  text-decoration: none;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.clinic-filter-pill:hover {
+  background: #d8ece3;
+  color: var(--clinic-primary-dark);
+  transform: translateY(-1px);
+}
+.clinic-filter-pill i { font-size: 0.95rem; }
+
+.clinic-tax-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--clinic-border);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem;
+  color: var(--clinic-text);
+  background: #fff;
+  margin-left: auto;
+}
+
+.doctor-card {
+  background: #fff;
+  border: 1px solid var(--clinic-border);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  height: 100%;
+}
+.doctor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(11,107,79,0.14);
+}
+.doctor-card-img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+}
+.doctor-card-body { padding: 0.9rem 1rem 1.1rem; }
+.doctor-card-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--clinic-text);
+  margin-bottom: 0.15rem;
+}
+.doctor-card-spec {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--clinic-primary);
+  margin-bottom: 0.4rem;
+}
+.doctor-card-fee {
+  font-size: 0.82rem;
+  color: var(--clinic-muted);
+}
+.doctor-card-fee .tax-info {
+  display: none;
+  color: var(--clinic-muted);
+}
