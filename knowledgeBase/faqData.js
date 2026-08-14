@@ -79,7 +79,7 @@ const faqEntries = [
     id: "payments-1",
     topic: "payments",
     content:
-      "Doorclinik supports secure online payments for consultations. Payment is typically completed at the time of booking or confirmation, depending on the doctor's settings.",
+      "Online payments are planned for Doorclinik but not yet available. Currently, appointment booking does not require payment through the platform.",
   },
   {
     id: "reviews-1",

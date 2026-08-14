@@ -1,0 +1,32 @@
+<button id="dc-chat-toggle" aria-label="Open chat assistant">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5z"/>
+    <path d="M9 10h.01"/><path d="M15 10h.01"/>
+    <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
+  </svg>
+</button>
+
+<div id="dc-chat-panel">
+  <div id="dc-chat-header">
+    <div id="dc-chat-header-title">
+      <div id="dc-chat-header-icon">🩺</div>
+      <div id="dc-chat-header-text">
+        <div class="dc-title">Doorclinik Assistant</div>
+        <div class="dc-subtitle">Online</div>
+      </div>
+    </div>
+    <button id="dc-chat-close" aria-label="Close chat">&times;</button>
+  </div>
+  <div id="dc-chat-messages">
+    <div class="dc-msg bot">Hi, I'm your Doorclinik assistant. Ask me anything — finding a specialist, booking help, or how the platform works.</div>
+  </div>
+  <div id="dc-chat-input-row">
+    <input id="dc-chat-input" type="text" placeholder="Ask me anything..." autocomplete="off" />
+    <button id="dc-chat-send" aria-label="Send message">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>

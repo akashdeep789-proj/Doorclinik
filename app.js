@@ -68,6 +68,7 @@ const userRouter = require("./routes/user.js");
 const adminRouter = require("./routes/admin.js");
 const bookingRouter = require("./routes/booking.js");
 const socialRoutes = require("./routes/social");
+const chatbotRoutes = require("./routes/chatbot");
 
 // ===== Database Connection =====
 const dbUrl = process.env.ATLASDB_URL;
@@ -84,8 +85,11 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
+app.use("/chatbot", chatbotRoutes);
+
 
 //  Helmet Security (Allow WebSocket connections)
 app.use(
