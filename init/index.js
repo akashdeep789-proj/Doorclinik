@@ -9,11 +9,17 @@ const Listing = require("../models/listing");
 const Specialization = require("../models/specialization");
 const { data: sampleDoctors } = require("./data.js");
 
-const dbUrl = process.env.ATLASDB_URL;
+// Fallback to local MongoDB URI if ATLASDB_URL is not set
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/doorclinik";
 
 async function seedDB() {
   await mongoose.connect(dbUrl);
-  console.log("Connected to MongoDB Atlas for seeding");
+  console.log(`Connected to Database at ${dbUrl} for seeding`);
+
+  // CLEAR OLD DATA TO PREVENT STALE MAPPING
+  await Listing.deleteMany({});
+  await Specialization.deleteMany({});
+  console.log("Cleared old listings and specializations.");
 
   for (const doctorData of sampleDoctors) {
     const usernameSlug = doctorData.title
@@ -33,34 +39,24 @@ async function seedDB() {
       console.log(`Created doctor user: ${username}`);
     }
 
-    let existingListing = await Listing.findOne({ title: doctorData.title });
-    
-    if (existingListing) {
-      // UPDATE existing listing image
-      existingListing.image = doctorData.image;
-      await existingListing.save();
-      console.log(`Updated image for listing: ${doctorData.title}`);
-    } else {
-      // CREATE new listing if it doesn't exist
-      existingListing = new Listing({
-        ...doctorData,
-        owner: doctorUser._id,
-      });
-      await existingListing.save();
-      console.log(`Created listing: ${doctorData.title}`);
-    }
+    const newListing = new Listing({
+      ...doctorData,
+      owner: doctorUser._id,
+    });
+    await newListing.save();
+    console.log(`Created listing: ${doctorData.title}`);
 
-    let spec = await Specialization.findOne({ name: existingListing.specialization });
+    let spec = await Specialization.findOne({ name: newListing.specialization });
     if (!spec) {
-      spec = new Specialization({ name: existingListing.specialization, doctors: [] });
+      spec = new Specialization({ name: newListing.specialization, doctors: [] });
     }
-    if (!spec.doctors.includes(existingListing._id)) {
-      spec.doctors.push(existingListing._id);
+    if (!spec.doctors.includes(newListing._id)) {
+      spec.doctors.push(newListing._id);
     }
     await spec.save();
   }
 
-  console.log("Seeding and updates complete.");
+  console.log("Seeding complete.");
   await mongoose.disconnect();
 }
 

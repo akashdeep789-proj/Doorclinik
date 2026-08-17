@@ -23,7 +23,7 @@ const helmet = require("helmet");
 const User = require("./models/user.js");
 const Listing = require("./models/listing.js");
 
-//  Import and setup Socket.IO correctly
+// Import and setup Socket.IO correctly
 const { setupSocketIO, adminSockets } = require("./sockets/sockets");
 const io = setupSocketIO(server); // pass server, not io
 app.set("io", io);
@@ -71,11 +71,13 @@ const socialRoutes = require("./routes/social");
 const chatbotRoutes = require("./routes/chatbot");
 
 // ===== Database Connection =====
-const dbUrl = process.env.ATLASDB_URL;
+// Fallback to local MongoDB URI if process.env.ATLASDB_URL is undefined
+const dbUrl = process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/doorclinik";
+
 if (process.env.NODE_ENV !== "test") {
   mongoose
     .connect(dbUrl)
-    .then(() => console.log(" Connected to MongoDB Atlas"))
+    .then(() => console.log(` Connected to MongoDB (${dbUrl.includes("mongodb+srv") ? "Atlas" : "Local"})`))
     .catch((err) => console.error(" DB Error:", err));
 }
 
@@ -90,8 +92,7 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 app.use("/chatbot", chatbotRoutes);
 
-
-//  Helmet Security (Allow WebSocket connections)
+// ===== Helmet Security =====
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -119,9 +120,12 @@ app.use(
         "https://*.tiles.mapbox.com",
         "https://events.mapbox.com",
         "https://api.mapbox.com",
-        "wss://doorclinik.onrender.com", //  allow WebSocket
+        "wss://doorclinik.onrender.com",
         "https://doorclinik.onrender.com",
         "http://localhost:3000",
+        "http://localhost:3001",
+        "ws://localhost:3000",
+        "ws://localhost:3001",
         process.env.WORKER_URL,
       ].filter(Boolean),
       imgSrc: [
@@ -131,10 +135,12 @@ app.use(
         "https://res.cloudinary.com",
         "https://images.unsplash.com",
         "https://plus.unsplash.com",
+        "https://randomuser.me", // Added RandomUser API
+        "https://via.placeholder.com", // Added fallback placeholder domain
       ],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
       objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
+      upgradeInsecureRequests: process.env.NODE_ENV === "production" ? [] : null,
     },
   })
 );
@@ -155,7 +161,7 @@ const sessionConfig = {
 if (process.env.NODE_ENV !== "test") {
   sessionConfig.store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto: { secret: process.env.SECRET },
+    crypto: { secret: process.env.SECRET || "thisshouldbeabettersecret" },
     touchAfter: 24 * 3600,
   });
 }
@@ -168,9 +174,6 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-
-
 
 // ===== Locals =====
 app.use((req, res, next) => {
