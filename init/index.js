@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== "production") {
 const mongoose = require("mongoose");
 const User = require("../models/user");
 const Listing = require("../models/listing");
-const Specialization = require("../models/specialization"); // adjust path if your model file is named differently
+const Specialization = require("../models/specialization");
 const { data: sampleDoctors } = require("./data.js");
 
 const dbUrl = process.env.ATLASDB_URL;
@@ -33,30 +33,34 @@ async function seedDB() {
       console.log(`Created doctor user: ${username}`);
     }
 
-    const existingListing = await Listing.findOne({ title: doctorData.title });
+    let existingListing = await Listing.findOne({ title: doctorData.title });
+    
     if (existingListing) {
-      console.log(`Listing already exists, skipping: ${doctorData.title}`);
-      continue;
+      // UPDATE existing listing image
+      existingListing.image = doctorData.image;
+      await existingListing.save();
+      console.log(`Updated image for listing: ${doctorData.title}`);
+    } else {
+      // CREATE new listing if it doesn't exist
+      existingListing = new Listing({
+        ...doctorData,
+        owner: doctorUser._id,
+      });
+      await existingListing.save();
+      console.log(`Created listing: ${doctorData.title}`);
     }
 
-    const newListing = new Listing({
-      ...doctorData,
-      owner: doctorUser._id,
-    });
-    await newListing.save();
-    console.log(`Created listing: ${doctorData.title}`);
-
-    let spec = await Specialization.findOne({ name: newListing.specialization });
+    let spec = await Specialization.findOne({ name: existingListing.specialization });
     if (!spec) {
-      spec = new Specialization({ name: newListing.specialization, doctors: [] });
+      spec = new Specialization({ name: existingListing.specialization, doctors: [] });
     }
-    if (!spec.doctors.includes(newListing._id)) {
-      spec.doctors.push(newListing._id);
+    if (!spec.doctors.includes(existingListing._id)) {
+      spec.doctors.push(existingListing._id);
     }
     await spec.save();
   }
 
-  console.log("Seeding complete.");
+  console.log("Seeding and updates complete.");
   await mongoose.disconnect();
 }
 
