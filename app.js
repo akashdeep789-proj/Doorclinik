@@ -140,26 +140,27 @@ app.use(
 );
 
 // ===== Session & Auth =====
-const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  crypto: { secret: process.env.SECRET },
-  touchAfter: 24 * 3600,
-});
+const sessionConfig = {
+  secret: process.env.SECRET || "thisshouldbeabettersecret",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 
-app.use(
-  session({
-    store,
-    secret: process.env.SECRET || "thisshouldbeabettersecret",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
-  })
-);
+if (process.env.NODE_ENV !== "test") {
+  sessionConfig.store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: { secret: process.env.SECRET },
+    touchAfter: 24 * 3600,
+  });
+}
+
+app.use(session(sessionConfig));
 
 app.use(flash());
 app.use(passport.initialize());
