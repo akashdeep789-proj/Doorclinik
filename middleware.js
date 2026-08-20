@@ -35,6 +35,26 @@ const reviewSchema = Joi.object({
     }).required(),
 });
 
+const signupSchema = Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).required(),
+    email: Joi.string().email({ tlds: { allow: false } }).required(),
+    password: Joi.string().min(6).required(),
+    adminCode: Joi.string().allow("", null),
+});
+
+const bookingSchema = Joi.object({
+    booking: Joi.object({
+        appointmentDate: Joi.date().required(),
+        appointmentTime: Joi.string()
+            .valid(
+                "Morning (9AM - 12PM)",
+                "Afternoon (12PM - 3PM)",
+                "Evening (3PM - 6PM)"
+            )
+            .required(),
+    }).required(),
+});
+
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.redirectUrl = req.originalUrl;
@@ -81,6 +101,26 @@ module.exports.validateListing = (req, res, next) => {
 
 module.exports.validateReview = (req, res, next) => {
     let { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errmsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400, errmsg);
+    } else {
+        next();
+    }
+};
+
+module.exports.validateSignup = (req, res, next) => {
+    let { error } = signupSchema.validate(req.body);
+    if (error) {
+        let errmsg = error.details.map((el) => el.message).join(",");
+        req.flash("error", errmsg);
+        return res.redirect("back");
+    }
+    next();
+};
+
+module.exports.validateBooking = (req, res, next) => {
+    let { error } = bookingSchema.validate(req.body);
     if (error) {
         let errmsg = error.details.map((el) => el.message).join(",");
         throw new ExpressError(400, errmsg);
