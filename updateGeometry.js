@@ -14,8 +14,9 @@ const Listing = require("./models/listing.js");
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
+
 // MongoDB connection URL
-const MONGO_URL = "mongodb://127.0.0.1:27017/Add your clinik";
+const MONGO_URL = process.env.ATLASDB_URL;
 
 // Connect to MongoDB and start the update process
 main().then(() => console.log("Connected to DB for updating geometry"))
