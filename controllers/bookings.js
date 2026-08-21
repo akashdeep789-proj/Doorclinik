@@ -40,7 +40,9 @@ module.exports.createBooking = async (req, res) => {
     endDateObj.setHours(18, 0, 0);
   }
 
-  // Check overlapping appointments
+  // Fast-path check for good UX — catches the common case instantly,
+  // without needing to hit the database's conflict error.
+  // This is NOT the real safety guarantee (see below) — just a quick UX shortcut.
   const isOverlapping = listing.bookedDates?.some(({ startDate, endDate }) => {
     return (
       (startDateObj >= startDate && startDateObj < endDate) ||
@@ -54,24 +56,38 @@ module.exports.createBooking = async (req, res) => {
     return res.redirect(`/listings/${id}`);
   }
 
-  // Create and save booking
-  const booking = new Booking({
-    listing: id,
-    user: req.user._id,
-    appointmentDate,
-    appointmentTime,
-    startDate: startDateObj,
-    endDate: endDateObj,
-    status: "pending",
-    paymentStatus: "pending",
-    amount: 500, // set default amount or get from listing
-  });
-  await booking.save();
+  // Create and save booking — the REAL safety guarantee against race conditions.
+  // If two requests reach this point simultaneously for the same doctor/date/time,
+  // MongoDB's unique index allows only the first write through. The second
+  // throws a duplicate-key error (code 11000), which we catch below.
+  let booking;
+  try {
+    booking = new Booking({
+      listing: id,
+      user: req.user._id,
+      appointmentDate,
+      appointmentTime,
+      startDate: startDateObj,
+      endDate: endDateObj,
+      status: "pending",
+      paymentStatus: "pending",
+      amount: 500,
+    });
+    await booking.save();
+  } catch (err) {
+    if (err.code === 11000) {
+      req.flash("error", "This time slot was just booked by someone else. Please choose another.");
+      return res.redirect(`/listings/${id}`);
+    }
+    throw err; // let wrapAsync/error handler deal with anything unexpected
+  }
 
-  // Save booked slot in listing
-  listing.bookedDates = listing.bookedDates || [];
-  listing.bookedDates.push({ startDate: startDateObj, endDate: endDateObj });
-  await listing.save();
+  // Atomic update to the listing's bookedDates — $push avoids the "lost update"
+  // problem that a full document.save() would have if two different bookings
+  // for the same doctor happened at nearly the same time.
+  await Listing.findByIdAndUpdate(id, {
+    $push: { bookedDates: { startDate: startDateObj, endDate: endDateObj } },
+  });
 
   // Notify doctor (Socket + DB) if owner exists
   if (listing.owner) {
@@ -96,7 +112,6 @@ module.exports.createBooking = async (req, res) => {
     });
   }
 
-  // ✅ Redirect patient to their bookings page instead of listing page
   req.flash("success", "Appointment booked successfully!");
   res.redirect("/bookings/mine");
 };
@@ -108,7 +123,7 @@ module.exports.myBookings = async (req, res) => {
   const bookings = await Booking.find({ user: userId })
     .populate({
       path: "listing",
-      populate: { path: "owner", select: "username" } // populate owner inside listing
+      populate: { path: "owner", select: "username" }
     })
     .sort({ appointmentDate: -1 });
 

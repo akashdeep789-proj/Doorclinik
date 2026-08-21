@@ -26,12 +26,12 @@ const bookingSchema = new Schema({
     enum: ["pending", "accepted", "rejected", "cancelled"],
     default: "pending",
   },
-  paymentStatus: { // new field for payment
+  paymentStatus: {
     type: String,
     enum: ["pending", "paid"],
     default: "pending",
   },
-  amount: { // optional
+  amount: {
     type: Number,
     default: 0,
   },
@@ -40,5 +40,13 @@ const bookingSchema = new Schema({
     default: Date.now,
   },
 });
+
+// Prevents two bookings for the same doctor + date + time slot,
+// enforced atomically by MongoDB itself — closes the race condition
+// no matter how many simultaneous requests arrive.
+bookingSchema.index(
+  { listing: 1, appointmentDate: 1, appointmentTime: 1 },
+  { unique: true }
+);
 
 module.exports = mongoose.model("Booking", bookingSchema);
