@@ -195,6 +195,17 @@ app.get("/", async (req, res, next) => {
     next(err);
   }
 });
+app.get("/home", async (req, res, next) => {
+  try {
+    const query = req.query.q || null;
+    const allListings = query
+      ? await Listing.find({ title: { $regex: query, $options: "i" } })
+      : await Listing.find({});
+    res.render("listings/home", { allListings, query });
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use("/ai-report", reportRoutes);
 app.use("/ambulance", ambulanceRouter);
