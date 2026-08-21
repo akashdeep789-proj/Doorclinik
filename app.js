@@ -184,24 +184,24 @@ app.use((req, res, next) => {
 });
 
 // ===== Routes =====
+
 app.get("/", async (req, res, next) => {
   try {
     const query = req.query.q || null;
+
     const allListings = query
       ? await Listing.find({ title: { $regex: query, $options: "i" } })
       : await Listing.find({});
+
     res.render("listings/index", { allListings, query });
   } catch (err) {
     next(err);
   }
 });
-app.get("/home", async (req, res, next) => {
+
+app.get("/home", (req, res, next) => {
   try {
-    const query = req.query.q || null;
-    const allListings = query
-      ? await Listing.find({ title: { $regex: query, $options: "i" } })
-      : await Listing.find({});
-    res.render("listings/home", { allListings, query });
+    res.render("listings/home");
   } catch (err) {
     next(err);
   }

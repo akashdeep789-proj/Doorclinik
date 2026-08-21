@@ -1,132 +1,1678 @@
 <% layout("/layouts/boilerplate") %>
 
-<!-- Hero -->
-<div class="clinic-hero">
-  <h1>Find the right doctor, book in minutes</h1>
-  <p>Browse verified specialists, read real patient reviews, and get AI-powered help finding who you need.</p>
-  <form action="/home" method="GET" class="clinic-hero-search">
-    <input type="text" name="q" placeholder="Search by doctor name or location..." value="<%= query || '' %>" />
-    <button type="submit">Search</button>
-  </form>
-</div>
+<style>
+  /* =========================
+     DOORCLINIK ABOUT PAGE
+     ========================= */
 
-<!-- Category cards -->
-<div class="clinic-section-title">Browse by specialization</div>
-<div class="clinic-section-subtitle">Find the right specialist for your needs</div>
-<div class="category-scroll">
-  <a href="/listings/specialization/General Physician" class="category-card">
-    <img src="https://images.pexels.com/photos/7108250/pexels-photo-7108250.jpeg?auto=compress&cs=tinysrgb&w=400" alt="General Physician" />
-    <div class="category-card-overlay"><span>General Physician</span></div>
-  </a>
-  <a href="/listings/specialization/Cardiologist" class="category-card">
-    <img src="https://images.pexels.com/photos/6129500/pexels-photo-6129500.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Cardiologist" />
-    <div class="category-card-overlay"><span>Cardiologist</span></div>
-  </a>
-  <a href="/listings/specialization/Neurologist" class="category-card">
-    <img src="https://images.pexels.com/photos/5888143/pexels-photo-5888143.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Neurologist" />
-    <div class="category-card-overlay"><span>Neurologist</span></div>
-  </a>
-  <a href="/listings/specialization/Dentist" class="category-card">
-    <img src="https://images.pexels.com/photos/4021775/pexels-photo-4021775.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Dentist" />
-    <div class="category-card-overlay"><span>Dentist</span></div>
-  </a>
-  <a href="/listings/specialization/Eye Specialist" class="category-card">
-    <img src="https://images.pexels.com/photos/8459997/pexels-photo-8459997.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Eye Specialist" />
-    <div class="category-card-overlay"><span>Eye Specialist</span></div>
-  </a>
-  <a href="/listings/specialization/Pediatrician" class="category-card">
-    <img src="https://images.pexels.com/photos/8376309/pexels-photo-8376309.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Pediatrician" />
-    <div class="category-card-overlay"><span>Pediatrician</span></div>
-  </a>
-  <a href="/listings/specialization/Vaccination" class="category-card">
-    <img src="https://images.pexels.com/photos/19963130/pexels-photo-19963130.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Vaccination" />
-    <div class="category-card-overlay"><span>Vaccination</span></div>
-  </a>
-  <a href="/listings/specialization/Diagnostics" class="category-card">
-    <img src="https://images.pexels.com/photos/18828741/pexels-photo-18828741.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Diagnostics" />
-    <div class="category-card-overlay"><span>Diagnostics</span></div>
-  </a>
-</div>
+  .about-page {
+    background: #f8fafc;
+    color: #172033;
+  }
 
-<!-- Trust badges -->
-<div class="trust-grid">
-  <div class="trust-card">
-    <div class="icon">✅</div>
-    <h6>Verified Listings</h6>
-    <p>Every doctor profile is reviewed before it goes live.</p>
-  </div>
-  <div class="trust-card">
-    <div class="icon">💬</div>
-    <h6>AI Assistant</h6>
-    <p>Ask our chatbot to help you find the right specialist.</p>
-  </div>
-  <div class="trust-card">
-    <div class="icon">⭐</div>
-    <h6>Real Patient Reviews</h6>
-    <p>Honest ratings from patients who've booked before.</p>
-  </div>
-  <div class="trust-card">
-    <div class="icon">🔒</div>
-    <h6>Secure Booking</h6>
-    <p>Your appointment slots are protected against double-booking.</p>
-  </div>
-</div>
+  /* HERO */
+  .about-hero {
+    min-height: 560px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(254, 66, 77, 0.12), transparent 30%),
+      radial-gradient(circle at 10% 80%, rgba(37, 99, 235, 0.10), transparent 30%),
+      linear-gradient(135deg, #ffffff 0%, #f3f7ff 100%);
+  }
 
-<div class="clinic-section-title">All doctors</div>
-<div class="clinic-section-subtitle">Browse and filter to find who's right for you</div>
+  .about-hero-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: auto;
+    padding: 80px 25px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+  }
 
-<div class="clinic-filters">
-  <a href="/listings/specialization/General Physician" class="clinic-filter-pill">
-    <i class="fa-solid fa-user-doctor"></i> General Physicians
-  </a>
-  <a href="/listings/specialization/Cardiologist" class="clinic-filter-pill">
-    <i class="fa-solid fa-heart-pulse"></i> Cardiologists
-  </a>
-  <a href="/listings/specialization/Neurologist" class="clinic-filter-pill">
-    <i class="fa-solid fa-brain"></i> Neurologists
-  </a>
-  <a href="/listings/specialization/Dentist" class="clinic-filter-pill">
-    <i class="fa-solid fa-tooth"></i> Dentists
-  </a>
-  <a href="/listings/specialization/Eye Specialist" class="clinic-filter-pill">
-    <i class="fa-solid fa-eye"></i> Eye Specialists
-  </a>
-  <a href="/listings/specialization/Pediatrician" class="clinic-filter-pill">
-    <i class="fa-solid fa-baby"></i> Pediatricians
-  </a>
-  <a href="/listings/specialization/Vaccination" class="clinic-filter-pill">
-    <i class="fa-solid fa-syringe"></i> Vaccinations
-  </a>
-  <a href="/listings/specialization/Diagnostics" class="clinic-filter-pill">
-    <i class="fa-solid fa-x-ray"></i> Diagnostics
-  </a>
-</div>
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #fe424d;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  }
 
-<% if (allListings.length === 0) { %>
-  <div class="text-center mt-4">
-    <% if (query) { %>
-      <h4>No doctors found for "<%= query %>"</h4>
-    <% } else { %>
-      <h4>No doctors found in this specialization</h4>
-    <% } %>
-  </div>
-<% } %>
+  .about-hero h1 {
+    font-size: clamp(42px, 6vw, 68px);
+    line-height: 1.05;
+    font-weight: 800;
+    margin-bottom: 22px;
+    letter-spacing: -2px;
+  }
 
-<% if (allListings.length > 0) { %>
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-3 mt-1 mb-4">
-    <% for (let listing of allListings) { %>
-      <div class="col">
-        <a href="/listings/<%= listing._id %>" class="doctor-card">
-          <img src="<%= listing.image.url %>" class="doctor-card-img" alt="doctor_image" />
-          <div class="doctor-card-body">
-            <div class="doctor-card-name">Dr. <%= listing.title %></div>
-            <div class="doctor-card-spec"><%= listing.specialization %></div>
-            <div class="doctor-card-fee">
-              &#8377;<%= listing.price.toLocaleString("en-IN") %> consultation
-            </div>
-          </div>
-        </a>
+  .about-hero h1 span {
+    color: #fe424d;
+  }
+
+  .about-hero-description {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #64748b;
+    max-width: 650px;
+    margin-bottom: 32px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .hero-primary-btn,
+  .hero-secondary-btn {
+    text-decoration: none;
+    padding: 13px 25px;
+    border-radius: 30px;
+    font-weight: 700;
+    transition: 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-primary-btn {
+    background: #fe424d;
+    color: white;
+    box-shadow: 0 10px 25px rgba(254, 66, 77, 0.25);
+  }
+
+  .hero-primary-btn:hover {
+    color: white;
+    transform: translateY(-3px);
+    background: #e83440;
+  }
+
+  .hero-secondary-btn {
+    background: white;
+    color: #172033;
+    border: 1px solid #dbe1ea;
+  }
+
+  .hero-secondary-btn:hover {
+    color: #fe424d;
+    border-color: #fe424d;
+    transform: translateY(-3px);
+  }
+
+  /* HERO VISUAL */
+  .hero-visual {
+    position: relative;
+    min-height: 390px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .medical-card {
+    width: 330px;
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.13);
+    position: relative;
+    z-index: 2;
+  }
+
+  .medical-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .medical-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    background: #fff0f1;
+    color: #fe424d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .medical-card-header h5 {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .medical-card-header p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .appointment-mini {
+    padding: 15px;
+    border-radius: 15px;
+    background: #f8fafc;
+    margin-bottom: 12px;
+  }
+
+  .appointment-mini strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .appointment-mini span {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .appointment-status {
+    color: #16a34a;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .floating-card {
+    position: absolute;
+    background: white;
+    border-radius: 15px;
+    padding: 14px 18px;
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .floating-card i {
+    color: #fe424d;
+  }
+
+  .floating-one {
+    top: 35px;
+    right: 0;
+  }
+
+  .floating-two {
+    bottom: 40px;
+    left: 0;
+  }
+
+  /* COMMON SECTION */
+  .about-section {
+    max-width: 1200px;
+    margin: auto;
+    padding: 90px 25px;
+  }
+
+  .section-heading {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .section-label {
+    color: #fe424d;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .section-heading h2 {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 15px;
+  }
+
+  .section-heading p {
+    max-width: 720px;
+    margin: auto;
+    color: #64748b;
+    line-height: 1.7;
+  }
+
+  /* PROJECT OVERVIEW */
+  .overview-section {
+    background: white;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    align-items: stretch;
+  }
+
+  .overview-content {
+    padding: 35px;
+    border-radius: 25px;
+    background: #f8fafc;
+    border: 1px solid #e8edf3;
+  }
+
+  .overview-content h3 {
+    font-weight: 800;
+    margin-bottom: 15px;
+  }
+
+  .overview-content p {
+    color: #64748b;
+    line-height: 1.8;
+  }
+
+  .problem-list {
+    margin-top: 25px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .problem-list li {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    color: #475569;
+  }
+
+  .problem-list i {
+    color: #fe424d;
+    margin-top: 4px;
+  }
+
+  .overview-highlight {
+    border-radius: 25px;
+    padding: 35px;
+    background: linear-gradient(135deg, #fe424d, #fc5c7d);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .overview-highlight h3 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 15px;
+  }
+
+  .overview-highlight p {
+    line-height: 1.8;
+    opacity: 0.92;
+  }
+
+  /* APPLICATIONS */
+  .applications-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .application-card {
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    border: 1px solid #e7ebf0;
+    transition: 0.3s ease;
+  }
+
+  .application-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.09);
+  }
+
+  .application-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 17px;
+    background: #fff1f2;
+    color: #fe424d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .application-card h4 {
+    font-weight: 750;
+    margin-bottom: 12px;
+  }
+
+  .application-card p {
+    color: #64748b;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ROLE SECTION */
+  .role-section {
+    background: #f1f5f9;
+  }
+
+  .role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+  }
+
+  .role-card {
+    background: white;
+    border-radius: 25px;
+    padding: 35px;
+    border-top: 4px solid #fe424d;
+  }
+
+  .role-card.doctor {
+    border-top-color: #2563eb;
+  }
+
+  .role-card.admin {
+    border-top-color: #7c3aed;
+  }
+
+  .role-icon {
+    font-size: 34px;
+    margin-bottom: 18px;
+  }
+
+  .role-card h3 {
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .role-card ul {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+  }
+
+  .role-card li {
+    padding: 9px 0;
+    color: #64748b;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .role-card li i {
+    margin-right: 8px;
+    color: #16a34a;
+  }
+
+  /* AI SECTION */
+  .ai-section {
+    background: white;
+  }
+
+  .ai-container {
+    background: linear-gradient(135deg, #111827, #1e293b);
+    color: white;
+    border-radius: 30px;
+    padding: 55px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 45px;
+    align-items: center;
+  }
+
+  .ai-container h2 {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 18px;
+  }
+
+  .ai-container > div > p {
+    color: #cbd5e1;
+    line-height: 1.8;
+  }
+
+  .ai-features {
+    display: grid;
+    gap: 15px;
+  }
+
+  .ai-feature {
+    padding: 20px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .ai-feature i {
+    color: #fb7185;
+    font-size: 21px;
+    margin-top: 3px;
+  }
+
+  .ai-feature h5 {
+    margin: 0 0 5px;
+    font-weight: 700;
+  }
+
+  .ai-feature p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* WORKFLOW */
+  .workflow-section {
+    background: #f8fafc;
+  }
+
+  .workflow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    position: relative;
+  }
+
+  .workflow-step {
+    text-align: center;
+    position: relative;
+  }
+
+  .step-number {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fe424d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .workflow-step h5 {
+    font-weight: 750;
+  }
+
+  .workflow-step p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* TECH STACK */
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .tech-badge {
+    padding: 12px 20px;
+    border-radius: 30px;
+    background: white;
+    border: 1px solid #dfe5ec;
+    font-weight: 650;
+    color: #334155;
+    transition: 0.25s ease;
+  }
+
+  .tech-badge:hover {
+    border-color: #fe424d;
+    color: #fe424d;
+    transform: translateY(-3px);
+  }
+
+  /* SECURITY */
+  .security-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+
+  .security-card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+  }
+
+  .security-card i {
+    font-size: 28px;
+    color: #fe424d;
+    margin-bottom: 15px;
+  }
+
+  .security-card h5 {
+    font-weight: 750;
+  }
+
+  .security-card p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* CTA */
+  .final-cta {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 25px 90px;
+  }
+
+  .cta-box {
+    border-radius: 30px;
+    padding: 70px 30px;
+    text-align: center;
+    background: linear-gradient(135deg, #fe424d, #fc5c7d);
+    color: white;
+    box-shadow: 0 20px 50px rgba(254, 66, 77, 0.2);
+  }
+
+  .cta-box h2 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 15px;
+  }
+
+  .cta-box p {
+    max-width: 650px;
+    margin: 0 auto 30px;
+    line-height: 1.7;
+    opacity: 0.92;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    background: white;
+    color: #fe424d;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-weight: 800;
+    transition: 0.3s ease;
+  }
+
+  .cta-btn:hover {
+    color: #fe424d;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 992px) {
+    .about-hero-container {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .about-hero-description {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-buttons {
+      justify-content: center;
+    }
+
+    .hero-visual {
+      max-width: 500px;
+      margin: auto;
+      width: 100%;
+    }
+
+    .applications-grid,
+    .role-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .security-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ai-container {
+      grid-template-columns: 1fr;
+    }
+
+    .workflow {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      min-height: auto;
+    }
+
+    .about-hero-container {
+      padding: 60px 20px;
+    }
+
+    .about-section {
+      padding: 65px 20px;
+    }
+
+    .overview-grid,
+    .applications-grid,
+    .role-grid,
+    .security-grid,
+    .workflow {
+      grid-template-columns: 1fr;
+    }
+
+    .section-heading h2,
+    .ai-container h2,
+    .cta-box h2 {
+      font-size: 30px;
+    }
+
+    .medical-card {
+      width: 290px;
+    }
+
+    .floating-one {
+      right: -5px;
+    }
+
+    .floating-two {
+      left: -5px;
+    }
+
+    .ai-container {
+      padding: 35px 25px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-visual {
+      min-height: 330px;
+    }
+
+    .medical-card {
+      width: 250px;
+      padding: 18px;
+    }
+
+    .floating-card {
+      font-size: 11px;
+      padding: 10px 12px;
+    }
+
+    .about-hero h1 {
+      font-size: 40px;
+    }
+  }
+</style>
+
+
+<div class="about-page">
+
+  <!-- =========================
+       HERO
+       ========================= -->
+  <section class="about-hero">
+
+    <div class="about-hero-container">
+
+      <div>
+
+        <div class="hero-badge">
+          <i class="fa-solid fa-stethoscope"></i>
+          Smart Healthcare Platform
+        </div>
+
+        <h1>
+          Healthcare made
+          <span>simple.</span>
+        </h1>
+
+        <p class="about-hero-description">
+          Doorclinik is a smart healthcare platform that connects
+          patients with doctors, simplifies appointment booking,
+          provides AI-powered assistance, and supports emergency
+          ambulance services — all in one place.
+        </p>
+
+        <div class="hero-buttons">
+
+          <a href="/listings" class="hero-primary-btn">
+            <i class="fa-solid fa-user-doctor"></i>
+            Explore Clinics
+          </a>
+
+          <a href="#applications" class="hero-secondary-btn">
+            <i class="fa-solid fa-circle-info"></i>
+            Explore Features
+          </a>
+
+        </div>
+
       </div>
-    <% } %>
+
+
+      <!-- HERO VISUAL -->
+
+      <div class="hero-visual">
+
+        <div class="medical-card">
+
+          <div class="medical-card-header">
+
+            <div class="medical-icon">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+
+            <div>
+              <h5>Doctor Appointment</h5>
+              <p>Doorclinik Healthcare</p>
+            </div>
+
+          </div>
+
+          <div class="appointment-mini">
+            <strong>Find a Specialist</strong>
+            <span>Choose from multiple medical specialties</span>
+          </div>
+
+          <div class="appointment-mini">
+            <strong>Book Appointment</strong>
+            <span>Select a convenient date and time</span>
+          </div>
+
+          <div class="appointment-mini">
+            <strong>Appointment Status</strong>
+            <span class="appointment-status">
+              <i class="fa-solid fa-circle-check"></i>
+              Securely Booked
+            </span>
+          </div>
+
+        </div>
+
+        <div class="floating-card floating-one">
+          <i class="fa-solid fa-robot"></i>
+          AI Assistance
+        </div>
+
+        <div class="floating-card floating-two">
+          <i class="fa-solid fa-truck-medical"></i>
+          Emergency Support
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       PROJECT OVERVIEW
+       ========================= -->
+
+  <section class="overview-section">
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          About The Project
+        </div>
+
+        <h2>
+          What is Doorclinik?
+        </h2>
+
+        <p>
+          Doorclinik is a full-stack healthcare appointment platform
+          designed to make doctor discovery and healthcare management
+          easier for patients, doctors, and administrators.
+        </p>
+
+      </div>
+
+
+      <div class="overview-grid">
+
+        <div class="overview-content">
+
+          <h3>
+            The Problem
+          </h3>
+
+          <p>
+            Finding the right doctor, checking availability, booking
+            appointments, and managing healthcare services can be
+            difficult when everything is handled through separate
+            systems.
+          </p>
+
+          <ul class="problem-list">
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Difficult doctor discovery
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manual appointment management
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Limited healthcare assistance
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Lack of integrated emergency support
+            </li>
+
+          </ul>
+
+        </div>
+
+
+        <div class="overview-highlight">
+
+          <h3>
+            Our Solution
+          </h3>
+
+          <p>
+            Doorclinik brings doctor discovery, appointment booking,
+            patient reviews, AI assistance, report summarization,
+            administration, and ambulance services together into
+            a single healthcare ecosystem.
+          </p>
+
+          <p>
+            The platform is designed around three major users:
+            <strong>Patients, Doctors, and Administrators.</strong>
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       APPLICATIONS
+       ========================= -->
+
+  <section id="applications">
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Applications
+        </div>
+
+        <h2>
+          Everything in one healthcare platform
+        </h2>
+
+        <p>
+          Doorclinik provides multiple integrated services to
+          simplify healthcare discovery and management.
+        </p>
+
+      </div>
+
+
+      <div class="applications-grid">
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+
+          <h4>Doctor Discovery</h4>
+
+          <p>
+            Patients can browse doctors by name, specialization,
+            and available healthcare services.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+
+          <h4>Appointment Booking</h4>
+
+          <p>
+            Patients can select doctors, choose available slots,
+            and book appointments securely.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <h4>Patient Reviews</h4>
+
+          <p>
+            Patients can provide ratings and reviews based on
+            their healthcare experience.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+
+          <h4>AI Assistant</h4>
+
+          <p>
+            An AI-powered assistant helps users understand their
+            healthcare needs and navigate the platform.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-file-medical"></i>
+          </div>
+
+          <h4>AI Report Summarization</h4>
+
+          <p>
+            Medical reports can be summarized with AI to make
+            complex information easier to understand.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-truck-medical"></i>
+          </div>
+
+          <h4>Ambulance Services</h4>
+
+          <p>
+            Users can request emergency ambulance services while
+            drivers can register and manage their access.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-hospital"></i>
+          </div>
+
+          <h4>Clinic Management</h4>
+
+          <p>
+            Doctors and clinic owners can add and manage their
+            healthcare listings on the platform.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-chart-column"></i>
+          </div>
+
+          <h4>Analytics Dashboard</h4>
+
+          <p>
+            Administrators can monitor platform activity and
+            analyze healthcare application data.
+          </p>
+
+        </div>
+
+
+        <div class="application-card">
+
+          <div class="application-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+
+          <h4>Secure Authentication</h4>
+
+          <p>
+            Role-based authentication separates patient, doctor,
+            and administrator functionality.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       USER ROLES
+       ========================= -->
+
+  <section class="role-section">
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          User Roles
+        </div>
+
+        <h2>
+          Built for every healthcare participant
+        </h2>
+
+        <p>
+          Each user type gets a dedicated experience according
+          to their responsibilities.
+        </p>
+
+      </div>
+
+
+      <div class="role-grid">
+
+        <!-- PATIENT -->
+
+        <div class="role-card">
+
+          <div class="role-icon">
+            👤
+          </div>
+
+          <h3>Patient</h3>
+
+          <ul>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Search for doctors
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Browse specializations
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              View doctor profiles
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Book appointments
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage appointments
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Submit reviews
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Use AI assistance
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Book ambulance
+            </li>
+
+          </ul>
+
+        </div>
+
+
+        <!-- DOCTOR -->
+
+        <div class="role-card doctor">
+
+          <div class="role-icon">
+            🩺
+          </div>
+
+          <h3>Doctor</h3>
+
+          <ul>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Create doctor profile
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Add clinic information
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Specify specialization
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage appointment slots
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage bookings
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              View patient interactions
+            </li>
+
+          </ul>
+
+        </div>
+
+
+        <!-- ADMIN -->
+
+        <div class="role-card admin">
+
+          <div class="role-icon">
+            👨‍💼
+          </div>
+
+          <h3>Administrator</h3>
+
+          <ul>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage doctors
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage clinic listings
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Monitor appointments
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              View analytics
+            </li>
+
+            <li>
+              <i class="fa-solid fa-check"></i>
+              Manage platform activity
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       AI FEATURES
+       ========================= -->
+
+  <section class="ai-section">
+
+    <div class="about-section">
+
+      <div class="ai-container">
+
+        <div>
+
+          <div class="section-label">
+            Artificial Intelligence
+          </div>
+
+          <h2>
+            Smarter healthcare with AI
+          </h2>
+
+          <p>
+            Doorclinik integrates AI-based functionality to improve
+            how users interact with healthcare information and
+            discover appropriate services.
+          </p>
+
+        </div>
+
+
+        <div class="ai-features">
+
+          <div class="ai-feature">
+
+            <i class="fa-solid fa-comments"></i>
+
+            <div>
+
+              <h5>AI Healthcare Assistant</h5>
+
+              <p>
+                Helps users navigate healthcare services and
+                find appropriate specialists.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="ai-feature">
+
+            <i class="fa-solid fa-file-lines"></i>
+
+            <div>
+
+              <h5>AI Report Summarization</h5>
+
+              <p>
+                Converts lengthy medical reports into easier
+                to understand summaries.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="ai-feature">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <div>
+
+              <h5>Smart Healthcare Discovery</h5>
+
+              <p>
+                Helps users find relevant healthcare services
+                based on their requirements.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       HOW IT WORKS
+       ========================= -->
+
+  <section class="workflow-section">
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          How It Works
+        </div>
+
+        <h2>
+          Simple healthcare journey
+        </h2>
+
+        <p>
+          Doorclinik simplifies the process of finding and
+          booking healthcare services.
+        </p>
+
+      </div>
+
+
+      <div class="workflow">
+
+        <div class="workflow-step">
+
+          <div class="step-number">
+            01
+          </div>
+
+          <h5>Discover</h5>
+
+          <p>
+            Search for doctors, clinics, or medical specialties.
+          </p>
+
+        </div>
+
+
+        <div class="workflow-step">
+
+          <div class="step-number">
+            02
+          </div>
+
+          <h5>Select</h5>
+
+          <p>
+            View doctor profiles, specialization, fees, and reviews.
+          </p>
+
+        </div>
+
+
+        <div class="workflow-step">
+
+          <div class="step-number">
+            03
+          </div>
+
+          <h5>Book</h5>
+
+          <p>
+            Choose an available appointment slot and confirm booking.
+          </p>
+
+        </div>
+
+
+        <div class="workflow-step">
+
+          <div class="step-number">
+            04
+          </div>
+
+          <h5>Manage</h5>
+
+          <p>
+            Manage appointments and access additional healthcare services.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       SECURITY
+       ========================= -->
+
+  <section>
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Platform
+        </div>
+
+        <h2>
+          Designed with security in mind
+        </h2>
+
+        <p>
+          Doorclinik separates responsibilities and protects
+          application functionality through authentication and
+          authorization.
+        </p>
+
+      </div>
+
+
+      <div class="security-grid">
+
+        <div class="security-card">
+
+          <i class="fa-solid fa-lock"></i>
+
+          <h5>Authentication</h5>
+
+          <p>
+            Secure login and signup functionality.
+          </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+          <i class="fa-solid fa-user-shield"></i>
+
+          <h5>Role Based Access</h5>
+
+          <p>
+            Different permissions for patients, doctors, and admins.
+          </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+          <i class="fa-solid fa-calendar-check"></i>
+
+          <h5>Booking Protection</h5>
+
+          <p>
+            Appointment slots are protected against duplicate bookings.
+          </p>
+
+        </div>
+
+
+        <div class="security-card">
+
+          <i class="fa-solid fa-database"></i>
+
+          <h5>Data Management</h5>
+
+          <p>
+            Healthcare application data is managed through the backend.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       TECHNOLOGY STACK
+       ========================= -->
+
+  <section class="workflow-section">
+
+    <div class="about-section">
+
+      <div class="section-heading">
+
+        <div class="section-label">
+          Technology
+        </div>
+
+        <h2>
+          Built with modern technologies
+        </h2>
+
+        <p>
+          Doorclinik uses a full-stack web architecture with
+          modern backend, database, frontend, and AI technologies.
+        </p>
+
+      </div>
+
+
+      <div class="tech-grid">
+
+        <div class="tech-badge">
+          <i class="fa-brands fa-node-js"></i>
+          Node.js
+        </div>
+
+        <div class="tech-badge">
+          Express.js
+        </div>
+
+        <div class="tech-badge">
+          MongoDB
+        </div>
+
+        <div class="tech-badge">
+          Mongoose
+        </div>
+
+        <div class="tech-badge">
+          EJS
+        </div>
+
+        <div class="tech-badge">
+          JavaScript
+        </div>
+
+        <div class="tech-badge">
+          HTML5
+        </div>
+
+        <div class="tech-badge">
+          CSS3
+        </div>
+
+        <div class="tech-badge">
+          Bootstrap
+        </div>
+
+        <div class="tech-badge">
+          Font Awesome
+        </div>
+
+        <div class="tech-badge">
+          Cloudinary
+        </div>
+
+        <div class="tech-badge">
+          Socket.io
+        </div>
+
+        <div class="tech-badge">
+          Chart.js
+        </div>
+
+        <div class="tech-badge">
+          REST APIs
+        </div>
+
+        <div class="tech-badge">
+          AI Integration
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       FINAL CTA
+       ========================= -->
+
+  <div class="final-cta">
+
+    <div class="cta-box">
+
+      <h2>
+        Ready to find the right doctor?
+      </h2>
+
+      <p>
+        Explore healthcare providers, browse specializations,
+        check doctor profiles, and book your appointment through
+        the Doorclinik platform.
+      </p>
+
+      <a href="/listings" class="cta-btn">
+
+        Explore Clinics
+
+        <i class="fa-solid fa-arrow-right"></i>
+
+      </a>
+
+    </div>
+
   </div>
-<% } %>
+
+</div>
